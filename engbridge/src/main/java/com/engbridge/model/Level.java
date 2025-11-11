@@ -1,4 +1,4 @@
 package com.engbridge.model;
 
-public class QuizResult {
+public class Level {
 }
