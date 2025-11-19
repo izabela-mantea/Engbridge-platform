@@ -8,6 +8,6 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
-        return "Welcome to EngBridge API! 🚀\n";
+        return "Welcome to EngBridge API!\n";
     }
 }
