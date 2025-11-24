@@ -1,4 +1,7 @@
 package com.paw.engbridge.model;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.util.List;
@@ -14,14 +17,15 @@ public class Course {
     @Column(nullable = false)
     private Integer orderNum;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 250)
     private String title;
 
     @ManyToOne
-    @JoinColumn(name = "courses_levels_fk")
+    @JoinColumn(name = "levels_id_lvl", nullable = false)
     private Level level;
 
-    @OneToMany(mappedBy = "sections", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Section> sections;
 
 }

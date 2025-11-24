@@ -1,4 +1,5 @@
 package com.paw.engbridge.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.util.List;
@@ -19,9 +20,11 @@ public class Section {
 
     @ManyToOne
     @JoinColumn(name="sections_course_fk")
+    @JsonIgnore
     private Course course;
 
-    @OneToMany(mappedBy = "exercises", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "section", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Exercise> exercises;
 
 
