@@ -1,5 +1,7 @@
 package com.paw.engbridge.controllers;
 
+import com.paw.engbridge.model.Course;
+import com.paw.engbridge.model.Exercise;
 import com.paw.engbridge.model.Level;
 import com.paw.engbridge.model.Section;
 import com.paw.engbridge.services.SectionService;
@@ -27,6 +29,12 @@ public class SectionsController {
     public ResponseEntity<Section> getLevelById(@PathVariable Integer id) {
         return sectionService.findById(id)
                 .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+    @GetMapping("/{id}/exercises")
+    public ResponseEntity<List<Exercise>> getExerciseBySectionId(@PathVariable Integer id) {
+        return sectionService.findById(id)
+                .map(section -> ResponseEntity.ok(section.getExercises()))
                 .orElse(ResponseEntity.notFound().build());
     }
     @PostMapping

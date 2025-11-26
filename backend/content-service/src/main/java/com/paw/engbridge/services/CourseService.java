@@ -27,11 +27,15 @@ public class CourseService {
     public void deleteById(Integer id) {
         courseRepository.deleteById(id);
     }
-    public List<Course> findByLevelId(Integer levelId) {
-        return courseRepository.findByLevelId(levelId);
-    }
 
     public List<Course> findAllOrderByOrderNum() {
         return courseRepository.findAllByOrderByOrderNumAsc();
+    }
+    public Optional<Course> findByLevelNameAndOrderNum(String levelName, Integer orderNum) {
+        return courseRepository.findByLevelNameAndOrderNum(levelName, orderNum);
+    }
+
+    public Optional<Course> findByLevelIdAndOrderNum(Integer levelId, Integer orderNum) {
+        return courseRepository.findByLevelIdAndOrderNum(levelId, orderNum);
     }
 }

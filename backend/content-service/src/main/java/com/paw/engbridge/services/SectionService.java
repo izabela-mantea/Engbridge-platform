@@ -1,5 +1,6 @@
 package com.paw.engbridge.services;
 
+import com.paw.engbridge.model.Course;
 import com.paw.engbridge.model.Level;
 import com.paw.engbridge.model.Section;
 import com.paw.engbridge.repositories.LevelRepository;
@@ -30,4 +31,7 @@ public class SectionService {
         sectionRepository.deleteById(id);
     }
 
+    public Optional<Section> findByLevelIdAndOrderNum(Integer courseID, Integer orderNum) {
+        return sectionRepository.findByCourseIdAndOrderNum(courseID, orderNum);
+    }
 }
