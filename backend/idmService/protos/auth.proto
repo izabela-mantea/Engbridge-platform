@@ -30,23 +30,21 @@ message LoginResponse {
   string token = 1;
   string error = 2;
 }
+
 message ValidateRequest {
   string token = 1;
-  
 }
+
 message ValidateResponse {
   bool valid = 1;
-  string userId = 2;
-  string username = 3;
-  string role = 4;
-  string error=5;
+  string error = 2;
 }
 
 message InvalidateRequest {
   string token = 1;
 }
+
 message InvalidateResponse {
   bool success = 1;
-  string message = 2;
-  string error = 3;
+  string error = 2;
 }

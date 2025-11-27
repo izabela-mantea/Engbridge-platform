@@ -1,0 +1,11 @@
+grpcio==1.60.0
+grpcio-tools==1.60.0
+sqlalchemy==2.0.25
+pymysql==1.1.0
+pydantic==2.5.3
+pydantic-settings==2.1.0
+bcrypt==4.1.2
+protobuf==5.29.0
+pyjwt==2.8.0
+python-dotenv==1.0.0
+#pip install -r requirements.txt

@@ -13,9 +13,7 @@ class Settings(BaseSettings):
     mysql_user: str = ""
     mysql_password: str = ""
 
-    event_service_port: int = 8001
-    event_manager_prefix: str = "/api/event-manager"
-
+   
     class Config:
         env_file = os.path.join(os.path.dirname(__file__), ".env")
         case_sensitive = False
