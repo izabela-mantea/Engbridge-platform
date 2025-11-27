@@ -11,10 +11,12 @@
         <module name="engbridge-common" />
         <module name="quiz-service" />
         <module name="content-service" />
-        <module name="uac-service" />
         <module name="progress-service" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="uac-service" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
