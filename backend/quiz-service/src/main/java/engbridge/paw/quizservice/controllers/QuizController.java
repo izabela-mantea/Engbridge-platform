@@ -1,15 +1,33 @@
 package engbridge.paw.quizservice.controllers;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import engbridge.paw.quizservice.model.QuizQuestion;
+import engbridge.paw.quizservice.model.QuizResult;
+import engbridge.paw.quizservice.services.QuizService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/quizzes")
+@RequiredArgsConstructor
 public class QuizController {
 
-    @GetMapping
-    public String getQuizzes() {
-        return "This will return all quizzes.";
+    private final QuizService quizService;
+
+    @GetMapping("/initial")
+    public ResponseEntity<List<QuizQuestion>> getInitialQuiz() {
+        return ResponseEntity.ok(quizService.getInitialQuiz());
+    }
+
+    @PostMapping("/initial/submit")
+    public ResponseEntity<QuizResult> submitQuiz(
+            @RequestParam Integer userId,
+            @RequestBody Map<Integer, String> answers) {
+
+        QuizResult result = quizService.submitQuiz(userId, answers);
+        return ResponseEntity.ok(result);
     }
 }
