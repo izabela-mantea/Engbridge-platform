@@ -4,7 +4,7 @@
     <data-source source="LOCAL" name="engbridge@localhost" uuid="99a2bdf7-a271-4141-bfeb-b3ad49828c9c">
       <driver-ref>mysql.9</driver-ref>
       <synchronize>true</synchronize>
-      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://localhost:3306/engbridge</jdbc-url>
       <jdbc-additional-properties>
         <property name="com.intellij.clouds.kubernetes.db.host.port" />
