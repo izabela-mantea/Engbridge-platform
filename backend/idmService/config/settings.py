@@ -1,10 +1,6 @@
-from pydantic_settings import BaseSettings
+from pydantic  import BaseSettings
 from functools import lru_cache
 import os
-
-print("Current working dir:", os.getcwd())
-print("Settings file location:", os.path.dirname(__file__))
-print("Looking for .env at:", os.path.join(os.path.dirname(__file__), ".env"))
 
 class Settings(BaseSettings):
     mysql_host: str = "localhost"
@@ -12,12 +8,12 @@ class Settings(BaseSettings):
     mysql_database: str = "Users"
     mysql_user: str = ""
     mysql_password: str = ""
-
+    jwt_secret: str = "default-secret-change-me"  
    
-    class Config:
-        env_file = os.path.join(os.path.dirname(__file__), ".env")
+    class Config: #type: ignore
+        env_file = os.path.join(os.path.dirname(__file__), "..", ".env")
         case_sensitive = False
-        extra = "allow"  
+        extra = "allow"
 
     @property
     def database_url(self) -> str:

@@ -19,6 +19,7 @@ message RegisterRequest {
 message RegisterResponse {
   bool success = 1;
   string message = 2;
+  int32 user_id = 3;
 }
 
 message LoginRequest {
@@ -29,6 +30,7 @@ message LoginRequest {
 message LoginResponse {
   string token = 1;
   string error = 2;
+  int32 user_id = 3;
 }
 
 message ValidateRequest {
@@ -38,6 +40,7 @@ message ValidateRequest {
 message ValidateResponse {
   bool valid = 1;
   string error = 2;
+  int32 user_id = 3;
 }
 
 message InvalidateRequest {
