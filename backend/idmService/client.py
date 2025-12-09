@@ -7,17 +7,15 @@ def run():
     with grpc.insecure_channel('localhost:50051') as channel:
         stub = auth_pb2_grpc.AuthServiceStub(channel)
 
-        print("--- Registering New User ---")
-        response = stub.Register(auth_pb2.RegisterRequest(
+        response = stub.Register(auth_pb2.RegisterRequest( #type: ignore
             username="newuser",
             password="newpassword",
             email="newuser@example.com",
             role="user"
-        ))
+            ))
         print(f"Register Success: {response.success}, Message: {response.message}")
 
-        print("\n--- Logging in as user1 ---")
-        response = stub.Login(auth_pb2.LoginRequest(
+        response = stub.Login(auth_pb2.LoginRequest( #type: ignore
             username="newuser",
             password="newpassword"
         ))
@@ -28,16 +26,14 @@ def run():
             print(f"Login Failed: {response.error}")
             return
 
-        print("\n--- Validating Token ---")
-        response = stub.ValidateToken(auth_pb2.ValidateRequest(token=token))
+        response = stub.ValidateToken(auth_pb2.ValidateRequest(token=token)) #type: ignore
+        print(f"Token Valid: {response.valid}, Error: {response.error}")
+        print(f"User ID: {response.user_id}")
+
+        response = stub.ValidateToken(auth_pb2.ValidateRequest(token="invalidtoken")) #type: ignore
         print(f"Token Valid: {response.valid}, Error: {response.error}")
 
-        print("\n--- Validating Invalid Token ---")
-        response = stub.ValidateToken(auth_pb2.ValidateRequest(token="invalidtoken"))
-        print(f"Token Valid: {response.valid}, Error: {response.error}")
-
-        print("\n--- Invalidating Token ---")
-        response = stub.InvalidateToken(auth_pb2.InvalidateRequest(token=token))
+        response = stub.InvalidateToken(auth_pb2.InvalidateRequest(token=token)) #type: ignore
         print(f"Token Invalidated: {response.success}, Error: {response.error}")
 
 if __name__ == '__main__':
