@@ -1,0 +1,111 @@
+
+# Windows
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Python virtual envs
+venv/
+env/
+.venv/
+ENV/
+
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+pip-wheel-metadata/
+*.egg-info/
+.eggs/
+
+# pytest
+.pytest_cache/
+cache/
+
+# environments
+.env
+.env.*
+*.env
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Mypy
+.mypy_cache/
+
+# Pydantic / models
+.pdm/
+
+# Local DBs
+*.sqlite3
+*.db
+
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-store/
+package-lock.json
+
+# Angular build
+dist/
+dist-out/
+out-tsc/
+
+# Compiled TypeScript
+*.tsbuildinfo
+
+# Angular cache
+.angular/
+.angular/cache/
+
+# Environment configs
+src/environments/environment*.ts
+
+
+.vscode/
+.vscode/*
+
+# Except specific configs if needed
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+
+.idea/
+*.iml
+out/
+
+# Remove JetBrains-specific data sources, workspace configs
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dataSources/
+.idea/dataSources.ids
+.idea/shelf/
+.idea/httpRequests/
+
+# Logs
+*.log
+logs/
+
+# temp files
+*.tmp
+*.swp
+*.swo
+*~
+
+# OS temporary
+tmp/
+temp/
+
+# Local override configs (safe to ignore)
+config.local.*
+settings.local.*
