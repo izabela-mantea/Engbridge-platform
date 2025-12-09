@@ -30,4 +30,10 @@ public class QuizController {
         QuizResult result = quizService.submitQuiz(userId, answers);
         return ResponseEntity.ok(result);
     }
+
+    @PostMapping("/initial/add")
+    public ResponseEntity<String> addQuestion(@RequestBody QuizQuestion question) {
+        quizService.addQuestion(question);
+        return ResponseEntity.ok("Intrebarea a fost adaugata cu succes!");
+    }
 }
