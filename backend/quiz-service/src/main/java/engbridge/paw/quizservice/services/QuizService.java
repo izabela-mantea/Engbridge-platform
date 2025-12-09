@@ -75,4 +75,8 @@ public class QuizService {
         if (score >= 30) return "A2";
         return "A1";
     }
+
+    public void addQuestion(QuizQuestion question) {
+        this.cachedQuestions.add(question);
+    }
 }
