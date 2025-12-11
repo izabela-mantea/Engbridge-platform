@@ -9,11 +9,18 @@ print("Looking for .env at:", os.path.join(os.path.dirname(__file__), ".env"))
 class Settings(BaseSettings):
     mysql_host: str = "localhost"
     mysql_port: int = 3306
-    mysql_database: str = "Users"
-    mysql_user: str = ""
-    mysql_password: str = ""
+    mysql_database: str = "uac_db"
+    mysql_user: str = "root"
+    mysql_password: str = "engbridge_password"
 
-   
+    grpc_port: int = 50051
+
+    secret_key: str = "ksugaughy345y786y3ru98&&GJYR#$#@HDFKJSHDFKJ"
+    algorithm: str = "HS256"
+
+    service_name: str = "uac-service"
+    service_url: str = "http://localhost:50051"
+    
     class Config:
         env_file = os.path.join(os.path.dirname(__file__), ".env")
         case_sensitive = False
