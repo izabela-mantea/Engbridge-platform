@@ -1,8 +1,5 @@
 ﻿# proiect-paw-fiveguys: frontend
 
- #### current frontend:) 
- <img width="1911" height="910" alt="image" src="https://github.com/user-attachments/assets/fa84175c-2560-48a9-82b1-8b4157191a13" />
-
  #### install dependencies
  ```
 npm install
@@ -22,3 +19,4 @@ or
 ng g c name
 ```
  
+
