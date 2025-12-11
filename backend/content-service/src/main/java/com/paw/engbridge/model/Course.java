@@ -28,4 +28,8 @@ public class Course {
     @JsonIgnore
     private List<Section> sections;
 
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<UserProgress> userProgresses;
+
 }

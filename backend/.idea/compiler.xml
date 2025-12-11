@@ -8,13 +8,13 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
-        <module name="engbridge-common" />
         <module name="quiz-service" />
         <module name="content-service" />
         <module name="progress-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="engbridge-common" target="17" />
       <module name="uac-service" target="17" />
     </bytecodeTargetLevel>
   </component>
