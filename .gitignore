@@ -1,0 +1,16 @@
+/node_modules
+
+/dist
+/out-tsc
+
+.idea
+.vscode
+*.log
+.DS_Store
+
+/npm-debug.log*
+/yarn-error.log
+/coverage
+/e2e/
+
+**/*.js.map

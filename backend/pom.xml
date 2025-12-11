@@ -15,7 +15,7 @@
         <module>api-gateway</module>
         <module>quiz-service</module>
         <module>progress-service</module>
-        <module>uac-service</module>
+        <!--<module>uac-service</module>-->
         <module>engbridge-common</module>
     </modules>
 </project>
