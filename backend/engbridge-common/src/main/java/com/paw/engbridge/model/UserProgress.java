@@ -2,7 +2,6 @@ package com.paw.engbridge.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.math.BigDecimal;
 
 @Entity
@@ -21,13 +20,12 @@ public class UserProgress {
     @Column(precision = 5, scale = 2)
     private BigDecimal score;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "users_id_user", nullable = false)
-    private User user;
+    @Column(name = "users_id_user", nullable = false)
+    private Integer userId;
 
     @Column(name = "courses_id_cs", nullable = false)
-    private Integer coursesIdCs;
+    private Integer courseId;
 
     @Column(name = "courses_levels_id_lvl", nullable = false)
-    private Integer coursesLevelsIdLvl;
+    private Integer levelId;
 }
