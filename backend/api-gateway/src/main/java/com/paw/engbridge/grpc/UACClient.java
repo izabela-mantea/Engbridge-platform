@@ -1,8 +1,6 @@
 package com.paw.engbridge.grpc;
 
-import com.engbridge.auth.grpc.AuthServiceGrpc;
-import com.engbridge.auth.grpc.ValidateRequest;
-import com.engbridge.auth.grpc.ValidateResponse;
+import com.engbridge.auth.grpc.*;
 import com.engbridge.auth.grpc.ValidateRequest;
 import com.engbridge.auth.grpc.ValidateResponse;
 import io.grpc.ManagedChannel;
@@ -37,7 +35,23 @@ public class UACClient {
 
         System.out.println("UAC gRPC Client initialized: " + host + ":" + port);
     }
+    public LoginResponse login(LoginRequest request) {
+        try {
+            return authStub.login(request);
+        } catch (StatusRuntimeException e) {
+            System.err.println("Login gRPC failed: " + e.getStatus());
+            throw new RuntimeException("Login failed", e);
+        }
+    }
 
+    public RegisterResponse register(RegisterRequest request) {
+        try {
+            return authStub.register(request);
+        } catch (StatusRuntimeException e) {
+            System.err.println("Register gRPC failed: " + e.getStatus());
+            throw new RuntimeException("Register failed", e);
+        }
+    }
     public ValidateResponse validateToken(String token) {
         try {
             ValidateRequest request = ValidateRequest.newBuilder()
