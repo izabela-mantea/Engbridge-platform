@@ -2,6 +2,7 @@ package com.paw.engbridge.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+
 import java.math.BigDecimal;
 
 @Entity

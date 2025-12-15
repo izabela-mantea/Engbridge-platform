@@ -14,7 +14,6 @@
         <module>content-service</module>
         <module>api-gateway</module>
         <module>quiz-service</module>
-        <module>uac-service</module>
         <module>engbridge-common</module>
     </modules>
 </project>
