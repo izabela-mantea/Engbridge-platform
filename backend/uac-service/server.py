@@ -138,7 +138,9 @@ class AuthService(protos.auth_pb2_grpc.AuthServiceServicer):
     def Login(self, request, context):
         db: Session=SessionLocal()
         try:    
-            exist=db.query(User).filter(User.username==request.username).first()
+            print("Login attempt:", request.username)
+            exist = db.query(User).filter(User.username == request.username).first()
+            print("Found user:", exist)
             if not exist:
                 return protos.auth_pb2.LoginResponse(
                     token="",
@@ -468,6 +470,7 @@ def serve():
     server.wait_for_termination()
 
 if __name__ == "__main__":
+    
     init_db()
     
     serve()

@@ -2,6 +2,7 @@ package com.paw.engbridge.controllers;
 
 import com.engbridge.auth.grpc.*;
 import com.paw.engbridge.grpc.UACClient;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -13,10 +14,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 @RestController
 public class GatewayController {
 
+    @PostConstruct
+    public void init() {
+        System.out.println(">>> GatewayController LOADED <<<");
+    }
     @Value("${service.content.url}")
     private String contentServiceUrl;
-
-
 
     private final UACClient uacClient;
     private final RestTemplate restTemplate = new RestTemplate();
@@ -97,8 +100,6 @@ public class GatewayController {
         String url = contentServiceUrl + path;
         return forwardRequest(url, HttpMethod.valueOf(request.getMethod()), body, request);
     }
-
-
 
     private ResponseEntity<String> forwardRequest(String url, HttpMethod method, String body, HttpServletRequest request) {
         try {
