@@ -66,6 +66,7 @@
 }
 
 .feature-card:hover {
+  background-color: #deeeff;
   transform: translateY(-5px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   cursor: pointer;
@@ -74,8 +75,6 @@
 .icon-circle {
   width: 50px;
   height: 50px;
-  border: 2px solid #007bff;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -96,4 +95,121 @@
 .feature-card p {
   font-size: 0.9em;
   color: #555;
+}
+
+.feature-card-icon{
+  display: block;
+  height: 45px;
+  width: auto;
+  margin: 0 auto;
+  vertical-align: middle;
+}
+
+.testimonials-section {
+  padding: 30px 30px;
+  background-color: #ffffff;
+  text-align: center;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.section-subtitle {
+  color: #666;
+  margin-bottom: 60px;
+  font-size: 1.1rem;
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: 5fr 5fr;
+  column-gap: 50px;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+.testimonial-card {
+  background: #f8faff;
+  padding: 40px;
+  border-radius: 20px;
+  text-align: left;
+  border: 1px solid #e1e8f0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+  transition: transform 0.3s ease;
+}
+
+.testimonial-card:hover {
+  background-color: #deeeff;
+  transform: translateY(-8px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+
+.testimonial-card:nth-child(1) {
+  grid-column: 1;
+  grid-row: 1;
+  margin-bottom: -40px;
+}
+
+.testimonial-card:nth-child(2) {
+  grid-column: 2;
+  grid-row: 2;
+  margin-top: 80px;
+}
+
+.testimonial-card:nth-child(3) {
+  grid-column: 1;
+  grid-row: 3;
+  margin-top: 40px;
+}
+
+.testimonial-card p {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: #444;
+  font-style: italic;
+}
+
+.blue-accent-bar {
+    height: 2px;
+    width: 100px;
+    background: #007bff;
+    margin: 20px 0;
+    border-radius: 2px;
+    transition: width 0.4s ease;
+}
+
+.testimonial-card:hover .blue-accent-bar {
+    width: 100%;
+}
+
+.student-info {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #dce4ed;
+
+}
+
+.student-info span {
+  color: #007bff;
+  font-size: 0.9rem;
+}
+
+.testimonial-card:hover .student-info span {
+  font-weight: bold;
+
+}
+
+
+@media (max-width: 768px) {
+  .testimonials-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .testimonial-card:nth-child(1),
+  .testimonial-card:nth-child(2),
+  .testimonial-card:nth-child(3) {
+    grid-column: auto;
+    grid-row: auto;
+    margin: 0;
+  }
 }

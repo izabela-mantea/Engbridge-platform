@@ -35,7 +35,7 @@
 .header-logo a {
   text-decoration: none;
   font-size: 1.8em;
-  font-weight: normal;
+  font-weight: 500;
   color: #007bff;
   display: flex;
   align-items: center;
