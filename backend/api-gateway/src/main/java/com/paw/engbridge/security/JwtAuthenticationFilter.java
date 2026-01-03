@@ -33,7 +33,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        // Extract token from Authorization header
         String token = extractToken(request);
 
         if (token == null) {
@@ -44,13 +43,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         try {
-            // Validate token with UAC service
             ValidateResponse validationResponse = uacClient.validateToken(token);
 
             if (!validationResponse.getValid()) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("application/json");
-                response.getWriter().write("{\"error\": \"Invalid token\"}");
+                sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
                 return;
             }
 
@@ -65,12 +61,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         } catch (Exception e) {
             System.err.println("Authentication failed: " + e.getMessage());
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"error\": \"Authentication failed\"}");
+            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Authentication failed");
         }
     }
-
+    // Helper method to send JSON error responses
+    private void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
+        response.resetBuffer();
+        response.setStatus(status);
+        response.setContentType("application/json");
+        response.getWriter().write("{\"error\": \"" + message + "\"}");
+        response.getWriter().flush();
+        response.flushBuffer();
+    }
     private String extractToken(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
