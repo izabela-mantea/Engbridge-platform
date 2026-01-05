@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     mysql_port: int = 3306
     mysql_database: str = "uac_db"
     mysql_user: str = "root"
-    mysql_password: str = "engbridge_password"
+    mysql_password: str = "root"
 
     grpc_port: int = 50051
 

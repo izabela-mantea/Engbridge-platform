@@ -27,13 +27,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        // Skip authentication for login/register endpoints
-        if (path.startsWith("/api/auth/")|| path.equals("/test")) {
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Extract token from Authorization header
+        // Skip authentication for login/register endpoints
+        if (path.startsWith("/api/auth/") || path.equals("/test") || path.startsWith("/api/quizzes/initial")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String token = extractToken(request);
 
         if (token == null) {
@@ -44,13 +48,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         try {
-            // Validate token with UAC service
             ValidateResponse validationResponse = uacClient.validateToken(token);
 
             if (!validationResponse.getValid()) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("application/json");
-                response.getWriter().write("{\"error\": \"Invalid token\"}");
+                sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
                 return;
             }
 
@@ -65,10 +66,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         } catch (Exception e) {
             System.err.println("Authentication failed: " + e.getMessage());
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"error\": \"Authentication failed\"}");
+            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Authentication failed");
         }
+    }
+    // Helper method to send JSON error responses
+    private void sendErrorResponse(HttpServletResponse response, int status, String message)
+            throws IOException {
+
+        response.setStatus(status);
+        response.setContentType("application/json");
+
+        response.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+
+        response.getWriter().write("{\"error\": \"" + message + "\"}");
     }
 
     private String extractToken(HttpServletRequest request) {

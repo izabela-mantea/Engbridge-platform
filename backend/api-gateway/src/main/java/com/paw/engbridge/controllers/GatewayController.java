@@ -2,14 +2,21 @@ package com.paw.engbridge.controllers;
 
 import com.engbridge.auth.grpc.*;
 import com.paw.engbridge.grpc.UACClient;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.JsonNode;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 public class GatewayController {
@@ -18,8 +25,12 @@ public class GatewayController {
     public void init() {
         System.out.println(">>> GatewayController LOADED <<<");
     }
+
     @Value("${service.content.url}")
     private String contentServiceUrl;
+
+    @Value("${service.quiz.url}")
+    private String quizServiceUrl;
 
     private final UACClient uacClient;
     private final RestTemplate restTemplate = new RestTemplate();
@@ -28,113 +39,309 @@ public class GatewayController {
     public GatewayController(UACClient uacClient) {
         this.uacClient = uacClient;
     }
-    @GetMapping("/test")
-    public String test() {
-        return "Gateway works!";
+
+    private String extractToken(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Missing token");
+        }
+        return authHeader.substring(7);
     }
-    // Login - apel gRPC catre UAC
-    @PostMapping("/api/auth/login")
-    public ResponseEntity<?> login(@RequestBody String body) {
+
+    private void requireAdmin(HttpServletRequest request) {
+        String role = (String) request.getAttribute("X-User-Role");
+        if (!"ADMIN".equals(role)) {
+            throw new IllegalArgumentException("Admin role required");
+        }
+    }
+    // ========================= QUIZ INITIAL =========================
+    @GetMapping("/api/quizzes/initial")
+    public ResponseEntity<?> getInitialQuiz() {
         try {
-            JsonNode json = objectMapper.readTree(body);
-            String username = json.get("username").asText();
-            String password = json.get("password").asText();
-
-            // Apel UAC prin gRPC
-            LoginRequest loginReq = LoginRequest.newBuilder()
-                    .setUsername(username)
-                    .setPassword(password)
-                    .build();
-
-            LoginResponse response = uacClient.login(loginReq);
-
-            if (response.hasError() && !response.getError().isEmpty()) {
-                return ResponseEntity.status(401)
-                        .body("{\"error\": \"" + response.getError() + "\"}");
-            }
-
-            return ResponseEntity.ok("{\"token\": \"" + response.getToken() + "\"}");
-
+            String url = quizServiceUrl + "/quizzes/initial";
+            ResponseEntity<String> resp = restTemplate.getForEntity(url, String.class);
+            return ResponseEntity.status(resp.getStatusCode()).body(resp.getBody());
         } catch (Exception e) {
-            System.err.println("Login error: " + e.getMessage());
-            return ResponseEntity.status(500)
-                    .body("{\"error\": \"" + e.getMessage() + "\"}");
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
     }
 
-    // Register - apel gRPC catre UAC
-    @PostMapping("/api/auth/register")
-    public ResponseEntity<?> register(@RequestBody String body) {
+    @PostMapping("/api/quizzes/initial/submit")
+    public ResponseEntity<?> submitInitialQuiz(@RequestBody Map<Integer, String> answers,
+                                               @RequestParam Integer userId) {
         try {
-            JsonNode json = objectMapper.readTree(body);
-            String username = json.get("username").asText();
-            String password = json.get("password").asText();
-            String email = json.get("email").asText();
+            String url = quizServiceUrl + "/quizzes/initial/submit?userId=" + userId;
 
-            RegisterRequest registerReq = RegisterRequest.newBuilder()
-                    .setUsername(username)
-                    .setPassword(password)
-                    .setEmail(email)
-                    .build();
-
-            RegisterResponse response = uacClient.register(registerReq);
-
-            if (!response.getSuccess()) {
-                return ResponseEntity.status(400)
-                        .body("{\"error\": \"" + response.getMessage() + "\"}");
-            }
-
-            return ResponseEntity.ok("{\"message\": \"" + response.getMessage() + "\"}");
-
-        } catch (Exception e) {
-            System.err.println("Register error: " + e.getMessage());
-            return ResponseEntity.status(500)
-                    .body("{\"error\": \"" + e.getMessage() + "\"}");
-        }
-    }
-
-    // Content Service - cu autentificare
-    @RequestMapping(value = "/api/content/**", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
-    public ResponseEntity<String> contentProxy(@RequestBody(required = false) String body, HttpServletRequest request) {
-        String path = request.getRequestURI().replace("/api/content", "");
-        String url = contentServiceUrl + path;
-        return forwardRequest(url, HttpMethod.valueOf(request.getMethod()), body, request);
-    }
-
-    private ResponseEntity<String> forwardRequest(String url, HttpMethod method, String body, HttpServletRequest request) {
-        try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<Map<Integer, String>> entity = new HttpEntity<>(answers, headers);
 
-            if (request != null) {
-                addUserHeaders(headers, request);
+            ResponseEntity<String> resp = restTemplate.postForEntity(url, entity, String.class);
+            return ResponseEntity.status(resp.getStatusCode()).body(resp.getBody());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    private String getUserId(HttpServletRequest request) {
+        return (String) request.getAttribute("X-User-Id");
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<?> test() {
+        return ResponseEntity.ok(Map.of("message", "Gateway works!"));
+    }
+
+    @RequestMapping(
+            value = "/api/content/**",
+            method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}
+    )
+    public ResponseEntity<?> forwardToContentService(
+            @RequestBody(required = false) String body,
+            HttpServletRequest request
+    ) {
+        try {
+            String method = request.getMethod();
+            if (method.equals("POST") || method.equals("PUT") || method.equals("DELETE")) {
+                requireAdmin(request);
             }
+
+            String token = extractToken(request);
+
+            String path = request.getRequestURI().substring("/api/content".length());
+            String url = contentServiceUrl + path;
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setBearerAuth(token);
 
             HttpEntity<String> entity = new HttpEntity<>(body, headers);
 
-            System.out.println("Forward " + method + " -> " + url);
-            ResponseEntity<String> response = restTemplate.exchange(url, method, entity, String.class);
-            System.out.println("Status: " + response.getStatusCode());
+            HttpMethod httpMethod = HttpMethod.valueOf(method);
 
-            return response;
+            ResponseEntity<String> resp = restTemplate.exchange(
+                    url, httpMethod, entity, String.class
+            );
 
-        } catch (org.springframework.web.client.HttpClientErrorException e) {
-            System.err.println("HTTP Error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
-            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
-        } catch (org.springframework.web.client.HttpServerErrorException e) {
-            System.err.println("HTTP Server Error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
-            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
+            return ResponseEntity.status(resp.getStatusCode()).body(resp.getBody());
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            return ResponseEntity.status(e.getStatusCode())
+                    .body(Map.of("error", e.getResponseBodyAsString()));
         } catch (Exception e) {
-            System.err.println("Forward Error: " + e.getMessage());
-            return ResponseEntity.status(500).body("{\"error\": \"" + e.getMessage() + "\"}");
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
     }
 
-    private void addUserHeaders(HttpHeaders headers, HttpServletRequest request) {
-        Object userId = request.getAttribute("X-User-Id");
-        Object role = request.getAttribute("X-User-Role");
+    // ========================= AUTH =========================
+    @PostMapping("/api/auth/login")
+    public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
+        try {
+            LoginRequest req = LoginRequest.newBuilder()
+                    .setUsername(body.get("username"))
+                    .setPassword(body.get("password"))
+                    .build();
 
-        if (userId != null) headers.set("X-User-Id", userId.toString());
-        if (role != null) headers.set("X-User-Role", role.toString());
+            LoginResponse resp = uacClient.login(req);
+
+            if (resp.hasError() && !resp.getError().isEmpty()) {
+                return ResponseEntity.status(401).body(Map.of("error", resp.getError()));
+            }
+
+            return ResponseEntity.ok(Map.of("token", resp.getToken()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
     }
+
+    @PostMapping("/api/auth/register")
+    public ResponseEntity<?> register(@RequestBody Map<String, String> body) {
+        try {
+            RegisterRequest req = RegisterRequest.newBuilder()
+                    .setUsername(body.get("username"))
+                    .setPassword(body.get("password"))
+                    .setEmail(body.get("email"))
+                    .build();
+
+            RegisterResponse resp = uacClient.register(req);
+
+            if (!resp.getSuccess()) {
+                return ResponseEntity.status(400).body(Map.of("error", resp.getMessage()));
+            }
+            return ResponseEntity.ok(Map.of("message", resp.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // ========================= USERS =========================
+    @GetMapping("/api/users")
+    public ResponseEntity<?> getAllUsers(HttpServletRequest request) {
+        try {
+            requireAdmin(request);
+            String token = extractToken(request);
+
+            UserList users = uacClient.getAllUsers(token);
+
+            List<Map<String, Object>> result = new ArrayList<>();
+            for (UserInfo u : users.getUsersList()) {
+                Map<String, Object> userMap = new HashMap<>();
+                userMap.put("uid", u.getUid());
+                userMap.put("username", u.getUsername());
+                userMap.put("email", u.getEmail());
+                userMap.put("role", u.getRole());
+                result.add(userMap);
+            }
+
+            return ResponseEntity.ok(result);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(403).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/api/users/{id}")
+    public ResponseEntity<?> getUser(@PathVariable int id, HttpServletRequest request) {
+        try {
+            String token = extractToken(request);
+            String role = (String) request.getAttribute("X-User-Role");
+            String userId = getUserId(request);
+
+            if (!"ADMIN".equals(role) && !Integer.toString(id).equals(userId)) {
+                return ResponseEntity.status(403).body(Map.of("error", "Access denied"));
+            }
+
+            UserResponse grpcResp = uacClient.getUser(UserIdRequest.newBuilder().setUid(id).build(), token);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("uid", grpcResp.getUid());
+            response.put("username", grpcResp.getUsername());
+            response.put("role", grpcResp.getRole());
+            return ResponseEntity.ok(response);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(403).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/api/users")
+    public ResponseEntity<?> createUser(@RequestBody Map<String, String> body, HttpServletRequest request) {
+        try {
+            requireAdmin(request);
+            String token = extractToken(request);
+
+            String username = body.get("username");
+            String password = body.get("password");
+            String email = body.get("email");
+            String role = body.get("role");
+
+            if (username == null || password == null || email == null || role == null) {
+                return ResponseEntity.status(400).body(Map.of("error", "Missing required field(s). Make sure you introduced username, password, email and role."));
+            }
+
+            CreateUserRequest grpcReq = CreateUserRequest.newBuilder()
+                    .setUsername(body.get("username"))
+                    .setPassword(body.get("password"))
+                    .setEmail(body.get("email"))
+                    .setRole(body.get("role"))
+                    .build();
+
+            CreateUserResponse grpcResp = uacClient.createUser(grpcReq, token);
+
+            if (!grpcResp.getSuccess()) {
+                return ResponseEntity.status(400).body(Map.of("error", grpcResp.getError()));
+            }
+
+            return ResponseEntity.ok(Map.of(
+                    "uid", grpcResp.getUid(),
+                    "message", grpcResp.getMessage()
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(403).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PutMapping("/api/users/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable int id, @RequestBody Map<String, String> body, HttpServletRequest request) {
+        try {
+            requireAdmin(request);
+            String token = extractToken(request);
+
+            UpdateRequest grpcReq = UpdateRequest.newBuilder()
+                    .setUid(id)
+                    .setUsername(body.getOrDefault("username", ""))
+                    .setPassword(body.getOrDefault("password", ""))
+                    .setRole(body.getOrDefault("role", ""))
+                    .build();
+
+            UpdateResponse grpcResp = uacClient.updateUser(grpcReq, token);
+
+            if (!grpcResp.getSuccess()) {
+                return ResponseEntity.status(400).body(Map.of("error", grpcResp.getError()));
+            }
+
+            return ResponseEntity.ok(Map.of("message", grpcResp.getMessage()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(403).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/api/users/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable int id, HttpServletRequest request) {
+        try {
+            requireAdmin(request);
+            String token = extractToken(request);
+
+            DeleteResponse grpcResp = uacClient.deleteUser(DeleteRequest.newBuilder().setUid(id).build(), token);
+
+            if (!grpcResp.getSuccess()) {
+                return ResponseEntity.status(400).body(Map.of("error", grpcResp.getError()));
+            }
+
+            return ResponseEntity.ok(Map.of("message", grpcResp.getMessage()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(403).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/api/users/me")
+    public ResponseEntity<?> getMyProfile(HttpServletRequest request) {
+        try {
+            String token = extractToken(request);
+            String userIdStr = getUserId(request);
+
+            if (userIdStr == null) {
+                return ResponseEntity.status(401)
+                        .body(Map.of("error", "Unauthorized"));
+            }
+
+            int userId = Integer.parseInt(userIdStr);
+
+            UserResponse grpcResp = uacClient.getUser(
+                    UserIdRequest.newBuilder().setUid(userId).build(),
+                    token
+            );
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("uid", grpcResp.getUid());
+            response.put("username", grpcResp.getUsername());
+            response.put("email", grpcResp.getEmail());
+            response.put("role", grpcResp.getRole());
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
 }
