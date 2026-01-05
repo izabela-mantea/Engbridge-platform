@@ -28,7 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
 
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            response.setStatus(HttpServletResponse.SC_OK);
+            filterChain.doFilter(request, response);
             return;
         }
 
@@ -70,14 +70,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
     // Helper method to send JSON error responses
-    private void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
-        response.resetBuffer();
+    private void sendErrorResponse(HttpServletResponse response, int status, String message)
+            throws IOException {
+
         response.setStatus(status);
         response.setContentType("application/json");
+
+        response.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+
         response.getWriter().write("{\"error\": \"" + message + "\"}");
-        response.getWriter().flush();
-        response.flushBuffer();
     }
+
     private String extractToken(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {

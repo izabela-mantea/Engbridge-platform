@@ -12,7 +12,6 @@ import uuid
 import jwt
 from jwt import ExpiredSignatureError, InvalidTokenError
 from config.database import settings
-import requests
 from config.database import init_db
 
 
@@ -155,10 +154,12 @@ class AuthService(protos.auth_pb2_grpc.AuthServiceServicer):
                 "alg": ALGORITHM,
                 "typ": "JWT"
                 }
+            exp_time = datetime.datetime.now(datetime.UTC) + datetime.timedelta(hours=1)
+
             payload = {
                 "iss": SERVICE_URL,             
                 "sub": str(exist.uid),            
-                "exp": datetime.datetime.now() + datetime.timedelta(hours=1),  
+                "exp": int(exp_time.timestamp()),   
                 "jti": str(uuid.uuid4()),       
                 "role": exist.role.value if isinstance(exist.role, UserRole) else exist.role
                 }
@@ -167,6 +168,7 @@ class AuthService(protos.auth_pb2_grpc.AuthServiceServicer):
 
             return protos.auth_pb2.LoginResponse(
                 token=token,
+                error=""
             )
         finally:
             db.close()
