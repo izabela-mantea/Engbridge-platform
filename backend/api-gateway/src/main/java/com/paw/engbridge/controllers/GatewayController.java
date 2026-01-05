@@ -311,4 +311,37 @@ public class GatewayController {
             return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
     }
+
+    @GetMapping("/api/users/me")
+    public ResponseEntity<?> getMyProfile(HttpServletRequest request) {
+        try {
+            String token = extractToken(request);
+            String userIdStr = getUserId(request);
+
+            if (userIdStr == null) {
+                return ResponseEntity.status(401)
+                        .body(Map.of("error", "Unauthorized"));
+            }
+
+            int userId = Integer.parseInt(userIdStr);
+
+            UserResponse grpcResp = uacClient.getUser(
+                    UserIdRequest.newBuilder().setUid(userId).build(),
+                    token
+            );
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("uid", grpcResp.getUid());
+            response.put("username", grpcResp.getUsername());
+            response.put("email", grpcResp.getEmail());
+            response.put("role", grpcResp.getRole());
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
 }
