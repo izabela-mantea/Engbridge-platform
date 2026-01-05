@@ -1,0 +1,10 @@
+F:\PAW\proiect-paw-fiveguys\backend\content-service\src\main\java\com\paw\engbridge\ContentServiceApplication.java
+F:\PAW\proiect-paw-fiveguys\backend\content-service\src\main\java\com\paw\engbridge\controllers\ProgressController.java
+F:\PAW\proiect-paw-fiveguys\backend\content-service\src\main\java\com\paw\engbridge\model\Course.java
+F:\PAW\proiect-paw-fiveguys\backend\content-service\src\main\java\com\paw\engbridge\model\Exercise.java
+F:\PAW\proiect-paw-fiveguys\backend\content-service\src\main\java\com\paw\engbridge\model\Level.java
+F:\PAW\proiect-paw-fiveguys\backend\content-service\src\main\java\com\paw\engbridge\model\Section.java
+F:\PAW\proiect-paw-fiveguys\backend\content-service\src\main\java\com\paw\engbridge\model\User.java
+F:\PAW\proiect-paw-fiveguys\backend\content-service\src\main\java\com\paw\engbridge\model\UserProgress.java
+F:\PAW\proiect-paw-fiveguys\backend\content-service\src\main\java\com\paw\engbridge\repositories\UserProgressRepository.java
+F:\PAW\proiect-paw-fiveguys\backend\content-service\src\main\java\com\paw\engbridge\services\ProgressService.java

@@ -1,0 +1,6 @@
+com\paw\engbridge\grpc\UACClient.class
+com\paw\engbridge\controllers\GatewayController.class
+com\paw\engbridge\security\JwtAuthenticationFilter.class
+com\paw\engbridge\config\CorsConfig.class
+com\paw\engbridge\config\CorsConfig$1.class
+com\paw\engbridge\ApiGatewayApplication.class

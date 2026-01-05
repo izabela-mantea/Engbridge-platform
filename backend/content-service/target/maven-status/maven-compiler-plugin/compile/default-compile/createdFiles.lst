@@ -1,0 +1,10 @@
+com\paw\engbridge\model\Level.class
+com\paw\engbridge\model\Section.class
+com\paw\engbridge\model\User.class
+com\paw\engbridge\controllers\ProgressController.class
+com\paw\engbridge\model\UserProgress.class
+com\paw\engbridge\repositories\UserProgressRepository.class
+com\paw\engbridge\ContentServiceApplication.class
+com\paw\engbridge\model\Exercise.class
+com\paw\engbridge\services\ProgressService.class
+com\paw\engbridge\model\Course.class
