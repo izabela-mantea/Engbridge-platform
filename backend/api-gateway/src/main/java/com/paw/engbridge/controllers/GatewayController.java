@@ -29,6 +29,9 @@ public class GatewayController {
     @Value("${service.content.url}")
     private String contentServiceUrl;
 
+    @Value("${service.quiz.url}")
+    private String quizServiceUrl;
+
     private final UACClient uacClient;
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -49,6 +52,34 @@ public class GatewayController {
         String role = (String) request.getAttribute("X-User-Role");
         if (!"ADMIN".equals(role)) {
             throw new IllegalArgumentException("Admin role required");
+        }
+    }
+    // ========================= QUIZ INITIAL =========================
+    @GetMapping("/api/quizzes/initial")
+    public ResponseEntity<?> getInitialQuiz() {
+        try {
+            String url = quizServiceUrl + "/quizzes/initial";
+            ResponseEntity<String> resp = restTemplate.getForEntity(url, String.class);
+            return ResponseEntity.status(resp.getStatusCode()).body(resp.getBody());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/api/quizzes/initial/submit")
+    public ResponseEntity<?> submitInitialQuiz(@RequestBody Map<Integer, String> answers,
+                                               @RequestParam Integer userId) {
+        try {
+            String url = quizServiceUrl + "/quizzes/initial/submit?userId=" + userId;
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<Map<Integer, String>> entity = new HttpEntity<>(answers, headers);
+
+            ResponseEntity<String> resp = restTemplate.postForEntity(url, entity, String.class);
+            return ResponseEntity.status(resp.getStatusCode()).body(resp.getBody());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
     }
 

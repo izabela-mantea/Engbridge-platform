@@ -19,6 +19,7 @@ public class CorsConfig {
                                 "http://localhost:4200",
                                 "http://localhost:4201",
                                 "http://127.0.0.1:4200",
+                                "http://bruno.local",
                                 "file://"
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")

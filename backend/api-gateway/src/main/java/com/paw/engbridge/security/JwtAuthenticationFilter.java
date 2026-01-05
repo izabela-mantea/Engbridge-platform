@@ -33,7 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         // Skip authentication for login/register endpoints
-        if (path.startsWith("/api/auth/")|| path.equals("/test")) {
+        if (path.startsWith("/api/auth/") || path.equals("/test") || path.startsWith("/api/quizzes/initial")) {
             filterChain.doFilter(request, response);
             return;
         }
