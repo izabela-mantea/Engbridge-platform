@@ -1,0 +1,34 @@
+<div class="course-page-content">
+  <section class="course-hero">
+    <div class="container">
+      <span class="badge">{{ levelId === '1' ? 'Intermediate Level' : (levelId === '2' ? 'Upper Intermediate Level' : 'Advanced Level') }}</span>
+      <h1>{{ levelId === '1' ? 'B1 Preliminary' : (levelId === '2' ? 'B2 First' : 'C1 Advanced') }}</h1>
+      <p class="subtitle">Master your skills with structured modules.</p>
+    </div>
+  </section>
+
+  <div class="course-details-grid">
+    <div *ngFor="let course of courses" class="details-card">
+      <div class="info-item" style="margin-bottom: 20px;">
+        <span style="font-size: 2rem;">💡</span>
+        <div>
+          <strong><h2>Course {{ course.orderNum }}</h2></strong>
+          <div style="color: #007bff; font-weight: 600;">Ready to start</div>
+        </div>
+      </div>
+
+      <ul class="bullet-list">
+        <li>Reading</li>
+        <li>Speaking</li>
+        <li>Writing</li>
+        <li>Listening</li>
+      </ul>
+
+      <button class="btn-start">Start Lesson</button>
+    </div>
+
+    <div *ngIf="courses.length === 0" class="details-card" style="grid-column: 1 / -1; text-align: center;">
+      <p>Loading your study plan...</p>
+    </div>
+  </div>
+</div>
