@@ -22,8 +22,14 @@ export class CoursesLearnComponent implements OnInit {
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
       this.levelId = params.get('levelId');
+      console.log('2. Level ID from URL:', this.levelId);
       if (this.levelId) {
+        console.log('3. Fetching courses for ID:', this.levelId);
         this.fetchCourses(this.levelId);
+      }
+      else
+      {
+        console.warn('3. No Level ID found!');
       }
     });
   }
