@@ -147,3 +147,36 @@
 .btn-check:hover {
   background: #38a169;
 }
+
+/*true false*/
+.tf-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.tf-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-tf {
+  padding: 5px 15px;
+  border: 1px solid #007bff;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-tf.selected {
+  background-color: #007bff;
+  color: white;
+}
+
+.instruction {
+  color: #666;
+  margin-bottom: 15px;
+  display: block;
+}

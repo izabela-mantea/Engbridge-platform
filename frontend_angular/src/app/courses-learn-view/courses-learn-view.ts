@@ -43,7 +43,7 @@ export class LessonViewComponent implements OnInit {
 
     if (section.loadedExercises) {
       this.exercises = section.loadedExercises;
-      console.log("Loaded exercies from cache from section:", section.title);
+      console.log("Loaded exercises from cache from section:", section.title);
       return;
     }
 
@@ -78,6 +78,19 @@ export class LessonViewComponent implements OnInit {
     // tb implementat
     alert("Feature in progress: Verifying answers...");
   }
+
+  checkTrueFalse(ex: any) {
+      let correctCount = 0;
+      const questions = ex.parsedContent.questions;
+
+      questions.forEach((q: any) => {
+        if (q.userAnswer === q.answer) {
+          correctCount++;
+        }
+      });
+
+
+    }
 
 
 }

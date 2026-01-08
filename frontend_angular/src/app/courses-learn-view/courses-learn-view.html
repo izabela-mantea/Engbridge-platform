@@ -16,8 +16,16 @@
       <hr>
 
       <div *ngFor="let ex of exercises" class="exercise-card">
+
+        <div *ngIf="ex.type === 'Text'" class="text-exercise">
+          <h3 *ngIf="ex.parsedContent.title">{{ ex.parsedContent.title }}</h3>
+          <p class="instruction"><em>{{ ex.parsedContent.instruction }}</em></p>
+          <div class="content-body">
+            {{ ex.parsedContent.text }}
+          </div>
+        </div>
+
         <div *ngIf="ex.type === 'Drag_and_Drop'" class="drag-drop-container">
-          <h3>{{ ex.parsedContent.title }}</h3>
           <p class="instruction"><em>{{ ex.parsedContent.instruction }}</em></p>
 
           <div class="fill-in-text">
@@ -31,25 +39,24 @@
               {{ opt }}
             </div>
           </div>
-
           <button class="btn-check" (click)="checkAnswers(ex)">Check Answers</button>
         </div>
-        <div *ngIf="ex.type === 'Text'">
-          <h3>{{ ex.parsedContent.title }}</h3>
-          <p>{{ ex.parsedContent.text }}</p>
+
+        <div *ngIf="ex.type === 'True_False'" class="true-false-box">
+          <p class="instruction"><em>{{ ex.parsedContent.instruction }}</em></p>
+
+          <div *ngFor="let q of ex.parsedContent.questions; let i = index" class="tf-row">
+            <p class="statement">{{ i + 1 }}. {{ q.statement }}</p>
+            <div class="tf-buttons">
+              <button class="btn-tf" (click)="q.userAnswer = true" [class.selected]="q.userAnswer === true">True</button>
+              <button class="btn-tf" (click)="q.userAnswer = false" [class.selected]="q.userAnswer === false">False</button>
+            </div>
+          </div>
+          <button class="btn-check" (click)="checkTrueFalse(ex)">Check Answers</button>
         </div>
 
-        <div *ngIf="ex.type === 'Quiz'" class="quiz-box">
-          <p class="question">{{ ex.parsedContent.question }}</p>
-          <div class="options">
-            <button *ngFor="let opt of ex.parsedContent.options" class="option-btn">
-              {{ opt }}
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   </main>
 </div>
-
 
