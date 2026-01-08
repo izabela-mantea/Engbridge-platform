@@ -1,3 +1,6 @@
+<!--page of a logged-in user learning(when they press header->Courses->level-->
+<!--access the link http://localhost:4200/courses-learn/{level_id} //1, 2 or 3-->
+
 <div class="course-page-content">
   <section class="course-hero">
     <div class="container">
@@ -9,10 +12,13 @@
 
   <div class="course-details-grid">
     <div *ngFor="let course of courses" class="details-card">
-      <div class="info-item" style="margin-bottom: 20px;">
-        <span style="font-size: 2rem;">💡</span>
+
+      <div class="info-item" style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+        <img src="assets/focus_icon.png"
+             alt="Course Icon"
+             style="width: 45px; height: 45px; object-fit: contain;">
         <div>
-          <strong><h2>Course {{ course.orderNum }}</h2></strong>
+          <h2 style="margin: 0; font-size: 1.5rem;">Course {{ course.orderNum }}</h2>
           <div style="color: #007bff; font-weight: 600;">Ready to start</div>
         </div>
       </div>
@@ -24,11 +30,12 @@
         <li>Listening</li>
       </ul>
 
-      <button class="btn-start">Start Lesson</button>
-    </div>
+      <a [routerLink]="['/courses-learn-view', levelId, course.id]" class="btn-start">
+        Start Lesson
+      </a>
 
-    <div *ngIf="courses.length === 0" class="details-card" style="grid-column: 1 / -1; text-align: center;">
-      <p>Loading your study plan...</p>
-    </div>
+    </div> <div *ngIf="courses.length === 0" class="details-card" style="grid-column: 1 / -1; text-align: center;">
+    <p>Loading your study plan...</p>
+  </div>
   </div>
 </div>

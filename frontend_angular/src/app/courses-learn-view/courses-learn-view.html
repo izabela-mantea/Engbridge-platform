@@ -1,0 +1,55 @@
+<div class="lesson-container">
+  <aside class="lesson-sidebar">
+    <h3>Course Progress</h3>
+    <div *ngFor="let section of sections"
+         (click)="selectSection(section)"
+         [class.active]="activeSection?.id === section.id"
+         class="section-tab">
+      <span class="type-icon">📝</span>
+      {{ section.type }}
+    </div>
+  </aside>
+
+  <main class="exercise-area">
+    <div *ngIf="activeSection">
+      <h1>{{ activeSection.type }}</h1>
+      <hr>
+
+      <div *ngFor="let ex of exercises" class="exercise-card">
+        <div *ngIf="ex.type === 'Drag_and_Drop'" class="drag-drop-container">
+          <h3>{{ ex.parsedContent.title }}</h3>
+          <p class="instruction"><em>{{ ex.parsedContent.instruction }}</em></p>
+
+          <div class="fill-in-text">
+            <p [innerHTML]="renderTextWithGaps(ex.parsedContent.text)"></p>
+          </div>
+
+          <div class="options-pool">
+            <div *ngFor="let opt of ex.parsedContent.options"
+                 class="draggable-item"
+                 draggable="true">
+              {{ opt }}
+            </div>
+          </div>
+
+          <button class="btn-check" (click)="checkAnswers(ex)">Check Answers</button>
+        </div>
+        <div *ngIf="ex.type === 'Text'">
+          <h3>{{ ex.parsedContent.title }}</h3>
+          <p>{{ ex.parsedContent.text }}</p>
+        </div>
+
+        <div *ngIf="ex.type === 'Quiz'" class="quiz-box">
+          <p class="question">{{ ex.parsedContent.question }}</p>
+          <div class="options">
+            <button *ngFor="let opt of ex.parsedContent.options" class="option-btn">
+              {{ opt }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+
