@@ -1,182 +1,220 @@
+
 .lesson-container {
   display: flex;
   min-height: 100vh;
-  background: #f4f7f6;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #fcfdfe;
 }
 
 .lesson-sidebar {
-  width: 280px;
+  width: 300px;
   background: white;
-  border-right: 1px solid #ddd;
-  padding: 20px;
+  border-right: 1px solid #e1e8f0;
+  padding: 30px 20px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.lesson-sidebar h3 {
+  font-size: 1.2rem;
+  color:  #007bff;
+  margin-bottom: 25px;
+  padding-left: 10px;
 }
 
 .section-tab {
   padding: 15px;
-  margin-bottom: 10px;
-  border-radius: 8px;
+  border-radius: 12px;
+  margin-bottom: 8px;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-weight: 600;
+  gap: 12px;
   color: #555;
+  font-weight: 500;
+}
+
+.section-tab:hover {
+  background: #f0f7ff;
+  color: #007bff;
 }
 
 .section-tab.active {
-  background: #007bff;
+  background: linear-gradient(150deg, #0755a8 0%, #007bff 100%);
   color: white;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
 }
 
+
 .exercise-area {
-  flex-grow: 1;
-  padding: 40px;
-  max-width: 800px;
+  flex: 1;
+  padding: 50px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
+.exercise-area h1 {
+  font-size: 2.2rem;
+  color:  #007bff;
+  margin-bottom: 30px;
+}
+
 .exercise-card {
-  background: white;
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  background: #ffffff;
+  padding: 35px;
+  border-radius: 20px;
+  border: 1px solid #e1e8f0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  margin-bottom: 40px;
+  transition: transform 0.3s ease;
+}
+
+.instruction {
+  display: inline-block;
+  background: #f0f7ff;
+  color: #007bff;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
   margin-bottom: 20px;
 }
 
-.quiz-box .options {
-  display: grid;
-  gap: 10px;
-  margin-top: 15px;
+.question-text {
+  font-size: 1.4rem;
+  color: #333;
+  margin-bottom: 25px;
+  line-height: 1.4;
 }
 
-.option-btn {
-  padding: 12px;
+.q-number {
+  color: #007bff;
+  margin-right: 10px;
+}
+
+.option-card {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  border-radius: 12px;
   border: 2px solid #e1e8f0;
-  background: white;
-  border-radius: 10px;
+  margin-bottom: 12px;
   cursor: pointer;
-  text-align: left;
+  transition: all 0.2s ease;
 }
 
-.option-btn:hover {
+.option-card:hover {
+  border-color: #007bff;
+  background: #fcfdfe;
+}
+
+.option-card.selected {
   border-color: #007bff;
   background: #f0f7ff;
 }
 
-/*css pt drag and drop*/
-.drag-drop-container {
-  background: #ffffff;
-  padding: 25px;
-  border-radius: 15px;
-  border: 1px dashed #cbd5e0;
-}
-
-.instruction {
-  color: #718096;
-  font-size: 0.95rem;
-  margin-bottom: 20px;
-}
-
-.fill-in-text {
-  font-size: 1.2rem;
-  line-height: 2;
-  color: #2d3748;
-  margin-bottom: 30px;
-  padding: 15px;
-  background: #f8fafc;
-  border-radius: 10px;
-}
-
-.gap-placeholder {
-  display: inline-block;
-  min-width: 80px;
-  height: 30px;
-  background: #edf2f7;
-  border-bottom: 2px solid #4a90e2;
-  margin: 0 5px;
-  text-align: center;
-  color: #4a90e2;
+.option-letter {
   font-weight: bold;
-  vertical-align: middle;
-  line-height: 1.2;
+  margin-right: 15px;
+  color: #007bff;
 }
 
-.options-pool {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 20px;
-  padding: 20px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-}
-
-.draggable-item {
-  padding: 8px 16px;
-  background: #4a90e2;
-  color: white;
-  border-radius: 8px;
-  cursor: grab;
-  font-weight: 500;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  transition: transform 0.2s;
-}
-
-.draggable-item:hover {
-  background: #357abd;
-  transform: scale(1.05);
-}
-
-.draggable-item:active {
-  cursor: grabbing;
-}
-
-.btn-check {
-  background: #48bb78;
-  color: white;
-  border: none;
-  padding: 10px 25px;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.btn-check:hover {
-  background: #38a169;
-}
-
-/*true false*/
-.tf-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid #eee;
-}
-
-.tf-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-.btn-tf {
-  padding: 5px 15px;
-  border: 1px solid #007bff;
-  background: white;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.btn-tf.selected {
+.btn-check, .btn-tf {
   background-color: #007bff;
   color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 20px;
 }
 
-.instruction {
-  color: #666;
-  margin-bottom: 15px;
-  display: block;
+.btn-check:hover { background-color: #0056b3; }
+
+.option-card.correct {
+  border-color: #28a745;
+  background: #e8f5e9;
 }
+
+.option-card.incorrect {
+  border-color: #dc3545;
+  background: #ffebee;
+}
+
+.lesson-footer {
+  margin-top: 50px;
+  padding-bottom: 80px;
+  text-align: center;
+}
+
+.footer-divider {
+  border: 0;
+  height: 1px;
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(225, 232, 240, 1), rgba(0, 0, 0, 0));
+  margin-bottom: 40px;
+}
+
+.submit-container {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  border: 2px dashed #e1e8f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.completion-info h4 {
+  font-size: 1.4rem;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.completion-info p {
+  color: #666;
+  margin-bottom: 0;
+}
+
+.btn-submit-lesson {
+   background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 14px 40px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s;
+    text-decoration: none;
+
+    display: block;
+    width: max-content;
+    margin: 10px auto;
+}
+
+.btn-submit-lesson:hover {
+  background-color: #0056b3;
+}
+
+.gap-input {
+  border: none;
+  border-bottom: 2px solid #007bff;
+  background: #f0f7ff;
+  width: 100px;
+  text-align: center;
+  font-weight: bold;
+  color: #0755a8;
+  margin: 0 5px;
+  outline: none;
+}
+
+.gap-input:focus {
+  background: #e1e8f0;
+  border-bottom-color: #0755a8;
+}
+

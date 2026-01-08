@@ -1,12 +1,8 @@
 <div class="lesson-container">
   <aside class="lesson-sidebar">
-    <h3>Course Progress</h3>
-    <div *ngFor="let section of sections"
-         (click)="selectSection(section)"
-         [class.active]="activeSection?.id === section.id"
-         class="section-tab">
-      <span class="type-icon">📝</span>
-      {{ section.type }}
+    <h3>Course </h3>
+    <div *ngFor="let section of sections" (click)="selectSection(section)" [class.active]="activeSection?.id === section.id"
+         class="section-tab">{{ section.type }}
     </div>
   </aside>
 
@@ -31,15 +27,6 @@
           <div class="fill-in-text">
             <p [innerHTML]="renderTextWithGaps(ex.parsedContent.text)"></p>
           </div>
-
-          <div class="options-pool">
-            <div *ngFor="let opt of ex.parsedContent.options"
-                 class="draggable-item"
-                 draggable="true">
-              {{ opt }}
-            </div>
-          </div>
-          <button class="btn-check" (click)="checkAnswers(ex)">Check Answers</button>
         </div>
 
         <div *ngIf="ex.type === 'True_False'" class="true-false-box">
@@ -55,8 +42,49 @@
           <button class="btn-check" (click)="checkTrueFalse(ex)">Check Answers</button>
         </div>
 
+        <div *ngIf="ex.type === 'Option'" class="options-container">
+          <p class="instruction"><em>{{ ex.parsedContent.instruction || 'Choose the correct answer:' }}</em></p>
+
+          <div class="question-block">
+            <h3 class="question-text">
+              <span class="q-number">{{ ex.orderNum - 1}}</span> {{ ex.parsedContent.question }}
+            </h3>
+
+            <div class="options-list">
+              <div *ngFor="let opt of ex.parsedContent.options; let optIdx = index"
+                   class="option-card"
+                   [class.selected]="ex.userAnswer === ['A', 'B', 'C', 'D'][optIdx]"
+                   [class.correct]="ex.submitted && ['A', 'B', 'C', 'D'][optIdx] === ex.parsedContent.answer"
+                   [class.incorrect]="ex.submitted && ex.userAnswer === ['A', 'B', 'C', 'D'][optIdx] && ex.userAnswer !== ex.parsedContent.answer"
+                   (click)="!ex.submitted && (ex.userAnswer = ['A', 'B', 'C', 'D'][optIdx])">
+                <div class="option-letter">{{ ['A', 'B', 'C', 'D'][optIdx] }}.</div>
+                <div class="option-content">{{ opt.split(': ')[1] || opt }}</div>
+              </div>
+            </div>
+
+<!--            <div *ngIf="ex.submitted && ex.userAnswer !== ex.parsedContent.answer" class="explanation">-->
+<!--              <strong>Explanation:</strong> {{ ex.parsedContent.explanation }}-->
+<!--            </div>-->
+          </div>
+
+<!--          <button class="btn-check" (click)="checkOption(ex)">Check Answer</button>-->
+        </div>
+
       </div>
     </div>
+   <div class="lesson-footer">
+    <hr class="footer-divider">
+    <div class="submit-container">
+      <div class="completion-info">
+        <h4>Ready?</h4>
+        <p>Check your answers before submitting this section.</p>
+      </div>
+      <button class="btn-submit-lesson" (click)="submitEntireSection()">
+        <span class="btn-text">Submit</span>
+      </button>
+    </div>
+  </div>
+
   </main>
 </div>
 
