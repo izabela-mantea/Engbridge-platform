@@ -48,7 +48,7 @@ class AuthService(protos.auth_pb2_grpc.AuthServiceServicer):
              username=request.username,
              email=request.email,
              password=hashed_password,
-             role="STUDENT"  
+             role=UserRole.STUDENT  
          )
 
          db.add(new_user)
