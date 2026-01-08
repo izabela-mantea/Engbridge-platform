@@ -16,6 +16,6 @@ export const appConfig: ApplicationConfig = {
         anchorScrolling: 'enabled'
       })
     ),
-    provideClientHydration(withEventReplay()),
+      provideClientHydration(withEventReplay())
   ]
 };
