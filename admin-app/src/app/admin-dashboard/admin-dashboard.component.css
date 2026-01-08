@@ -8,30 +8,92 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: #f5f7fa;
 }
-
 .dashboard-header {
-  background: linear-gradient(150deg, #0755a8 0%, #007bff 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  text-align: center;
-  padding: 100px 20px 120px;
+  padding: 1.5rem 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   position: relative;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .dashboard-header h2 {
-  font-size: 2.8em;
-  margin: 0 0 10px 0;
+  font-size: 1.8em;
+  margin: 0;
   font-weight: 600;
 }
 
 .user-info {
   position: absolute;
-  top: 2rem;
+  top: 50%;
+  transform: translateY(-50%); 
   right: 2rem;
   display: flex;
   align-items: center;
   gap: 1rem;
   z-index: 10;
+}
+
+.stats-section {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+/* Tab Navigation */
+.tab-navigation {
+  max-width: 100%;
+  margin: 0 0 2rem 0;
+  padding: 0;
+  display: flex;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  padding: 1.25rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  flex: 1; /* Fiecare buton ocupă jumătate */
+  text-align: center;
+}
+
+.tab-btn:hover {
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.05);
+}
+
+.tab-btn.active {
+  color: #667eea;
+  border-bottom-color: #667eea;
+  background: rgba(102, 126, 234, 0.03);
+}
+
+.tab-icon {
+  display: none;
+}
+
+/* Courses Section */
+.courses-section {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .user-info span {
@@ -59,16 +121,6 @@ body {
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Statistics Section */
-.stats-section {
-  display: flex;
-  justify-content: center;
-  gap: 50px;
-  max-width: 1200px;
-  margin: -60px auto 40px;
-  padding: 0 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
 
 .stat-card {
   background-color: white;

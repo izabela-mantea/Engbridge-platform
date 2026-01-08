@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AdminService, User } from '../services/admin.service';
 import { AuthService } from '../services/auth.service';
+import { UserFormComponent } from '../user-form/user-form.component';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, UserFormComponent],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.css']
 })
@@ -20,6 +21,10 @@ export class AdminDashboardComponent implements OnInit {
   loading = false;
   showDeleteConfirm = false;
   userToDelete: User | null = null;
+
+  showUserForm = false;
+  selectedUser: User | null = null;
+  activeTab: 'users' | 'courses' = 'users'; 
 
   constructor(
     private adminService: AdminService,
@@ -48,8 +53,8 @@ export class AdminDashboardComponent implements OnInit {
           console.log('Type of data:', typeof data);
           console.log('Is array?', Array.isArray(data));
 
-          // Filter out admin users - don't show them in the list
-          this.users = data.filter(user => user.role !== 'ADMIN');
+          // Filter out current user - don't show them in the list
+          this.users = data.filter(user => String(user.uid) !== String(this.currentUser?.uid));
           this.loading = false;
 
           console.log('this.users after assignment:', this.users);
@@ -82,10 +87,17 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   openCreateUser() {
-    // TODO: Implement create user functionality
-    console.log('Create user clicked');
-    this.errorMessage = 'Create user functionality not yet implemented';
-  }
+  this.selectedUser = null;  // null = CREATE mode
+  this.showUserForm = true;
+  this.errorMessage = '';
+}
+
+editUser(user: User) {
+  this.selectedUser = { ...user };  // clone = EDIT mode
+  this.showUserForm = true;
+  this.errorMessage = '';
+}
+
 
   viewUser(user: User) {
     // TODO: Implement view user details
@@ -94,11 +106,7 @@ export class AdminDashboardComponent implements OnInit {
     setTimeout(() => this.successMessage = '', 3000);
   }
 
-  editUser(user: User) {
-    // TODO: Implement edit user functionality
-    console.log('Edit user:', user);
-    this.errorMessage = 'Edit user functionality not yet implemented';
-  }
+
 
   confirmDelete(user: User) {
     this.userToDelete = user;
@@ -134,4 +142,55 @@ export class AdminDashboardComponent implements OnInit {
     this.authService.logout();
     this.router.navigate(['/login']);
   }
+  switchTab(tab: 'users' | 'courses') {
+  this.activeTab = tab;
+  this.errorMessage = '';
+  this.successMessage = '';
+}
+ handleSaveUser(userData: User) {
+  if (this.selectedUser?.uid) {
+    this.adminService.updateUser(this.selectedUser.uid, userData).subscribe({
+      next: () => {
+        this.successMessage = 'User updated successfully!';
+        this.showUserForm = false;
+        this.loadUsers();
+        setTimeout(() => this.successMessage = '', 3000);
+      },
+      error: (err) => {
+        console.error('Update error:', err);
+        if (err.status === 400) {
+          this.errorMessage = 'Invalid data: ' + (err.error?.message || 'Please check your input');
+        } else if (err.status === 409) {
+          this.errorMessage = 'User with this username or email already exists';
+        } else if (err.status === 404) {
+          this.errorMessage = 'User not found';
+        } else {
+          this.errorMessage = 'Failed to update user: ' + (err.error?.message || err.message || 'Unknown error');
+        }
+        setTimeout(() => this.errorMessage = '', 5000);
+      }
+    });
+  } else {
+    this.adminService.createUser(userData).subscribe({
+      next: () => {
+        this.successMessage = 'User created successfully!';
+        this.showUserForm = false;
+        this.loadUsers();
+        setTimeout(() => this.successMessage = '', 3000);
+      },
+      error: (err) => {
+        console.error('Create error:', err);
+        if (err.status === 400) {
+          this.errorMessage = 'Invalid data: ' + (err.error?.message || 'Please check your input');
+        } else if (err.status === 409) {
+          this.errorMessage = 'User with this username or email already exists';
+        } else {
+          this.errorMessage = 'Failed to create user: ' + (err.error?.message || err.message || 'Unknown error');
+        }
+        setTimeout(() => this.errorMessage = '', 5000);
+      }
+    });
+  }
+}
+
 }

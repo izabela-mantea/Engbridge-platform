@@ -26,9 +26,26 @@
     </div>
   </div>
 </div>
+<!-- Tab Navigation -->
+<div class="tab-navigation">
+  <button 
+    class="tab-btn" 
+    [class.active]="activeTab === 'users'"
+    (click)="switchTab('users')">
+    Users Management
+  </button>
+  <button 
+    class="tab-btn" 
+    [class.active]="activeTab === 'courses'"
+    (click)="switchTab('courses')">
+    Courses Management
+  </button>
+</div>
+
 
 <!-- Users Management Section -->
-<div class="users-section">
+<div class="users-section" *ngIf="activeTab === 'users'">
+
   <div class="section-header">
     <h3>Users Management</h3>
     <button class="create-btn" (click)="openCreateUser()">
@@ -55,13 +72,15 @@
       </div>
       <span class="user-role" [ngClass]="getRoleClass(user.role)">{{ user.role }}</span>
       <div class="user-actions">
-        <button class="action-btn view-btn" (click)="viewUser(user)">View</button>
         <button class="action-btn edit-btn" (click)="editUser(user)">Edit</button>
         <button class="action-btn delete-btn" (click)="confirmDelete(user)">Delete</button>
       </div>
     </li>
   </ul>
 </div>
+<!-- Courses Management Section -->
+<!--TO BE implemented by Sebastian-->
+
 
 <!-- Success Message -->
 <div *ngIf="successMessage" class="success-message">
@@ -84,4 +103,12 @@
       <button class="btn-confirm-delete" (click)="deleteUser(userToDelete!.uid!)">Delete</button>
     </div>
   </div>
+  
 </div>
+<app-user-form 
+  [isVisible]="showUserForm"
+  [user]="selectedUser"
+  (onClose)="showUserForm = false"
+  (onSave)="handleSaveUser($event)">
+</app-user-form>
+
