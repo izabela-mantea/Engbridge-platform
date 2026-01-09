@@ -5,6 +5,12 @@
       <a *ngFor="let section of sections"  href="/{{levelId}}/{{courseId}}/{{section.id}}"
          class="section-tab">{{ section.type }}</a>
     </div>
+
+    <div class="sidebar-footer-nav">
+      <a href="/courses-learn/{{levelId}}" class="btn-all-courses">
+        <span class="arrow">←</span> All Courses
+      </a>
+    </div>
   </aside>
 
   <main class="exercise-area">

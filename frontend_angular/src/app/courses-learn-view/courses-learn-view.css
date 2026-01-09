@@ -13,6 +13,10 @@
   position: sticky;
   top: 0;
   height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
 }
 
 .lesson-sidebar h3 {
@@ -223,6 +227,27 @@
 
 .btn-submit-lesson:hover {
   background-color: #0056b3;
+}
+
+.btn-all-courses{
+   background-color: white;
+   color: #333;
+   border: 1.5px solid #007bff;
+   border-radius: 30px;
+   padding: 12px 30px;
+   font-weight: 600;
+   font-size: 0.9rem;
+   cursor: pointer;
+   text-decoration: none;
+   text-align: center;
+   margin-top: auto;
+   margin-top: 80px;
+   display: block;
+   transition: background 0.2s;
+}
+
+.btn-all-courses:hover {
+  color: #007bff;
 }
 
 .gap-input {
