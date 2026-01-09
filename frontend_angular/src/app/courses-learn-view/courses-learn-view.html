@@ -19,6 +19,7 @@
 
       <div *ngFor="let ex of exercises" class="exercise-card">
 
+<!--        Exercise type: Text-->
         <div *ngIf="ex.type === 'Text'" class="text-exercise">
           <h3 *ngIf="ex.parsedContent.title">{{ ex.parsedContent.title }}</h3>
           <p class="instruction"><em>{{ ex.parsedContent.instruction }}</em></p>
@@ -27,6 +28,7 @@
           </div>
         </div>
 
+<!--        Exercise type: Video-->
         <div *ngIf="ex.type === 'Video'" class="text-exercise">
           <h3 *ngIf="ex.parsedContent.title" class="video-title">
             {{ ex.parsedContent.title }}
@@ -47,6 +49,7 @@
           </div>
         </div>
 
+<!--        Exercise type: True and False-->
         <div *ngIf="ex.type === 'True_False'" class="options-container">
           <p class="instruction">
             <em>{{ ex.parsedContent.instruction || 'Decide if the statement is true or false:' }}</em>
@@ -77,6 +80,8 @@
           </div>
         </div>
 
+
+<!--        Exercise type: Option-->
         <div *ngIf="ex.type === 'Option'" class="options-container">
           <p class="instruction"><em>{{ ex.parsedContent.instruction || 'Choose the correct answer:' }}</em></p>
 
@@ -101,7 +106,38 @@
 
         </div>
 
+<!--        Exercise type: Fill the gaps-->
+        <div *ngIf="ex.type === 'FillGaps'" class="exercise-card fill-gaps-container">
+          <h3 class="exercise-title">{{ ex.parsedContent.title }}</h3>
+          <p class="instruction"><em>{{ ex.parsedContent.instruction }}</em></p>
+
+          <div class="gap-text-content">
+            {{ ex.parsedContent.text }}
+          </div>
+
+          <hr class="divider">
+
+          <div class="gaps-selection-grid">
+            <div *ngFor="let gapKey of getObjectKeys(ex.parsedContent.requirements)" class="gap-selection-row">
+              <span class="gap-number">({{ gapKey }})</span>
+
+              <div class="gap-buttons">
+                <button *ngFor="let option of ex.parsedContent.requirements[gapKey]"
+                        class="gap-btn"
+                        [class.selected]="ex.userAnswers && ex.userAnswers[gapKey] === option"
+                        [class.correct]="ex.submitted && option === ex.parsedContent.answer_key[gapKey]"
+                        [class.incorrect]="ex.submitted && ex.userAnswers && ex.userAnswers[gapKey] === option && option !== ex.parsedContent.answer_key[gapKey]"
+                        (click)="!ex.submitted && selectGapAnswer(ex, gapKey, option)">
+                  {{ option }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
+
+<!--      submit button-->
     </div>
    <div class="lesson-footer">
     <hr class="footer-divider">
