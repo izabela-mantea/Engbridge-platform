@@ -3,11 +3,12 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { SafePipe } from '../shared/safe.pipe';
 
 @Component({
   selector: 'app-courses-learn-view',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, SafePipe, RouterModule],
   templateUrl: './courses-learn-view.html',
   styleUrls: ['./courses-learn-view.css']
 })
@@ -19,126 +20,108 @@ export class LessonViewComponent implements OnInit {
   activeSection: any = null;
 
   constructor(
-      private route: ActivatedRoute,
-      private http: HttpClient,
-      private sanitizer: DomSanitizer // Required for innerHTML gaps
-    ) {}
+    private route: ActivatedRoute,
+    private http: HttpClient,
+    private sanitizer: DomSanitizer
+  ) {}
 
   ngOnInit() {
-    this.levelId = this.route.snapshot.paramMap.get('levelId');
-    this.courseId = this.route.snapshot.paramMap.get('courseId');
+    this.route.paramMap.subscribe(params => {
+      const newLevelId = params.get('levelId');
+      const newCourseId = params.get('courseId');
+      const newSectionId = params.get('sectionId');
 
-    if (this.courseId) {
-      this.loadSections();
-    }
+      this.levelId = newLevelId;
+
+      if (newCourseId !== this.courseId) {
+        this.courseId = newCourseId;
+        this.loadSections(newSectionId);
+      } else if (newSectionId) {
+        this.updateActiveSection(newSectionId);
+        this.loadExercisesForSection(newSectionId);
+      }
+    });
   }
 
-  loadSections() {
+  loadSections(currentSectionId: string | null) {
     this.http.get<any[]>(`http://localhost:8081/courses/${this.courseId}/sections`)
       .subscribe(data => {
         this.sections = data;
-        if (this.sections.length > 0) {
-          this.selectSection(this.sections[0]);
+        if (currentSectionId) {
+          this.updateActiveSection(currentSectionId);
+          this.loadExercisesForSection(currentSectionId);
         }
       });
   }
 
-  selectSection(section: any) {
-    this.activeSection = section;
+  updateActiveSection(sectionId: string) {
 
-    if (section.loadedExercises) {
-      this.exercises = section.loadedExercises;
-      console.log("Loaded exercises from cache from section:", section.title);
-      return;
+    const section = this.sections.find(s => s.id.toString() === sectionId.toString());
+    if (section) {
+      this.activeSection = section;
     }
+  }
 
-    // if not found, we fetch them
-    this.exercises = [];
-    this.http.get<any[]>(`http://localhost:8081/exercises/section/${section.id}`)
+  loadExercisesForSection(id: string) {
+    this.http.get<any[]>(`http://localhost:8081/exercises/section/${id}`)
       .subscribe({
         next: (data) => {
-          section.loadedExercises = data.map(ex => ({
+          this.exercises = data.map(ex => ({
             ...ex,
             parsedContent: typeof ex.content === 'string' ? JSON.parse(ex.content) : ex.content
           }));
-
-          this.exercises = section.loadedExercises;
         },
-        error: (err) => {
-          console.error("Error loading exercises:", err);
-        }
+        error: (err) => console.error("Error loading exercises!:", err)
       });
   }
 
   renderTextWithGaps(text: string): SafeHtml {
-      if (!text) return '';
-      const replaced = text.replace(/\[gap(\d+)\]/g, (match, number) => {
-        return `<input type="text" class="gap-input" data-gap="${number}" placeholder="...">`;
-      });
-      return this.sanitizer.bypassSecurityTrustHtml(replaced);
-    }
-
-  checkAnswers(exercise: any) {
-    console.log("Checking solutions for:", exercise.parsedContent.solution);
-    // tb implementat
-    alert("Feature in progress: Verifying answers...");
+    if (!text) return '';
+    const replaced = text.replace(/\[gap(\d+)\]/g, (match, number) => {
+      return `<input type="text" class="gap-input" data-gap="${number}" placeholder="...">`;
+    });
+    return this.sanitizer.bypassSecurityTrustHtml(replaced);
   }
-
-  checkTrueFalse(ex: any) {
-      let correctCount = 0;
-      const questions = ex.parsedContent.questions;
-
-      questions.forEach((q: any) => {
-        if (q.userAnswer === q.answer) {
-          correctCount++;
-        }
-      });
-    }
 
   checkOption(ex: any) {
     if (!ex.userAnswer) {
       alert("Please select an answer first!");
       return;
     }
-
     ex.submitted = true;
-
-    if (ex.userAnswer === ex.parsedContent.answer) {
-      console.log("Correct!");
-    } else {
-      console.log("Incorrect. Correct answer is:", ex.parsedContent.answer);
-    }
   }
 
-  submitEntireSection(){
-      this.exercises.forEach(ex => {if (ex.type !== 'Text')
-            {
-              ex.submitted = true;
-            }
-            });
-      let score = 0;
-      let totalInteractives = 0;
-      this.exercises.forEach(ex => {
-            if (ex.type === 'Option') {
-              totalInteractives++;
-              if (ex.userAnswer === ex.parsedContent.answer) score++;
-            }
-            else if (ex.type === 'True_False') {
-              ex.parsedContent.questions.forEach((q: any) => {
-                totalInteractives++;
-                if (q.userAnswer === q.answer) score++;
-              });
-            }
-          });
+  submitEntireSection() {
+    this.exercises.forEach(ex => {
+      if (ex.type !== 'Text') {
+        ex.submitted = true;
+      }
+    });
 
-         const percentage = Math.round((score / totalInteractives) * 100);
-                alert(`Section Complete! Your score: ${score}/${totalInteractives} (${percentage}%)`);
+    let score = 0;
+    let totalInteractives = 0;
 
-       //to be saved in user progress
-    }
+    this.exercises.forEach(ex => {
+      if (ex.type === 'Option') {
+        totalInteractives++;
+        if (ex.userAnswer === ex.parsedContent.answer) score++;
+      } else if (ex.type === 'True_False') {
+        ex.parsedContent.questions.forEach((q: any) => {
+          totalInteractives++;
+          if (q.userAnswer === q.answer) score++;
+        });
+      }
+    });
 
+    const percentage = totalInteractives > 0 ? Math.round((score / totalInteractives) * 100) : 0;
+    alert(`Section Complete! Your score: ${score}/${totalInteractives} (${percentage}%)`);
+//
+//     TO BE SAVED IN USER PROGRESS!!!!!!!!!!!!!!!!!!!!
 
-
+  }
 }
+
+
+
 
 

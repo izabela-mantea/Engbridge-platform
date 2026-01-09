@@ -1,8 +1,9 @@
 <div class="lesson-container">
   <aside class="lesson-sidebar">
-    <h3>Course </h3>
-    <div *ngFor="let section of sections" (click)="selectSection(section)" [class.active]="activeSection?.id === section.id"
-         class="section-tab">{{ section.type }}
+    <h3>Course content </h3>
+    <div>
+      <a *ngFor="let section of sections"  href="/{{levelId}}/{{courseId}}/{{section.id}}"
+         class="section-tab">{{ section.type }}</a>
     </div>
   </aside>
 
@@ -10,6 +11,11 @@
     <div *ngIf="activeSection">
       <h1>{{ activeSection.type }}</h1>
       <hr>
+
+      <div *ngIf="exercises.length === 0" style="padding: 20px; color: gray; text-align: center; border: 2px dashed #ccc;">
+        <p>There is no exercise for section "{{ activeSection.type }}" (ID: {{ activeSection.id }}).</p>
+        <p>Check database for exercises_section_fk = {{ activeSection.id }}</p>
+      </div>
 
       <div *ngFor="let ex of exercises" class="exercise-card">
 
@@ -21,25 +27,54 @@
           </div>
         </div>
 
-        <div *ngIf="ex.type === 'Drag_and_Drop'" class="drag-drop-container">
-          <p class="instruction"><em>{{ ex.parsedContent.instruction }}</em></p>
+        <div *ngIf="ex.type === 'Video'" class="text-exercise">
+          <h3 *ngIf="ex.parsedContent.title" class="video-title">
+            {{ ex.parsedContent.title }}
+          </h3>
 
-          <div class="fill-in-text">
-            <p [innerHTML]="renderTextWithGaps(ex.parsedContent.text)"></p>
+          <p class="instruction">
+            <em>{{ ex.parsedContent.instruction || 'Watch the video and answer the question:' }}</em>
+          </p>
+
+          <div class="video-player-wrapper">
+            <iframe
+              class="video-element"
+              [src]="ex.parsedContent.videoUrl | safe"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen>
+            </iframe>
           </div>
         </div>
 
-        <div *ngIf="ex.type === 'True_False'" class="true-false-box">
-          <p class="instruction"><em>{{ ex.parsedContent.instruction }}</em></p>
+        <div *ngIf="ex.type === 'True_False'" class="options-container">
+          <p class="instruction">
+            <em>{{ ex.parsedContent.instruction || 'Decide if the statement is true or false:' }}</em>
+          </p>
 
-          <div *ngFor="let q of ex.parsedContent.questions; let i = index" class="tf-row">
-            <p class="statement">{{ i + 1 }}. {{ q.statement }}</p>
-            <div class="tf-buttons">
-              <button class="btn-tf" (click)="q.userAnswer = true" [class.selected]="q.userAnswer === true">True</button>
-              <button class="btn-tf" (click)="q.userAnswer = false" [class.selected]="q.userAnswer === false">False</button>
+          <div class="question-block">
+            <h3 class="question-text">
+              <span class="q-number">{{ ex.orderNum - 1 }}</span> {{ ex.parsedContent.question }}
+            </h3>
+
+            <div class="options-list">
+              <div *ngFor="let opt of ex.parsedContent.options; let optIdx = index"
+                   class="option-card"
+                   [class.selected]="ex.userAnswer === opt"
+                   [class.correct]="ex.submitted && opt === ex.parsedContent.answer"
+                   [class.incorrect]="ex.submitted && ex.userAnswer === opt && ex.userAnswer !== ex.parsedContent.answer"
+                   (click)="!ex.submitted && (ex.userAnswer = opt)">
+
+                <div class="option-letter">{{ opt.charAt(0) }}</div>
+                <div class="option-content">{{ opt }}</div>
+              </div>
+            </div>
+
+            <div *ngIf="ex.submitted && ex.parsedContent.explanation" class="explanation-box">
+              <hr>
+              <p><strong>Explanation:</strong> {{ ex.parsedContent.explanation }}</p>
             </div>
           </div>
-          <button class="btn-check" (click)="checkTrueFalse(ex)">Check Answers</button>
         </div>
 
         <div *ngIf="ex.type === 'Option'" class="options-container">
@@ -62,12 +97,8 @@
               </div>
             </div>
 
-<!--            <div *ngIf="ex.submitted && ex.userAnswer !== ex.parsedContent.answer" class="explanation">-->
-<!--              <strong>Explanation:</strong> {{ ex.parsedContent.explanation }}-->
-<!--            </div>-->
           </div>
 
-<!--          <button class="btn-check" (click)="checkOption(ex)">Check Answer</button>-->
         </div>
 
       </div>

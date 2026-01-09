@@ -1,5 +1,4 @@
 <!--page of a logged-in user learning(when they press header->Courses->level-->
-<!--access the link http://localhost:4200/courses-learn/{level_id} //1, 2 or 3-->
 
 <div class="course-page-content">
   <section class="course-hero">
@@ -30,7 +29,10 @@
         <li>Listening</li>
       </ul>
 
-      <a href="/courses-learn-view/{{levelId}}/{{course.id}}" class="btn-start">
+<!--      <a href="/courses-learn-view/{{levelId}}/{{course.id}}" class="btn-start">-->
+<!--        Start Lesson-->
+<!--      </a>-->
+      <a href="/{{levelId}}/{{course.id}}" class="btn-start">-->
         Start Lesson
       </a>
 
