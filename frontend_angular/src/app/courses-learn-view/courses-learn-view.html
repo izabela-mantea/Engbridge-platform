@@ -8,6 +8,18 @@
   </aside>
 
   <main class="exercise-area">
+<!--shows up after user submits a section-->
+    <div *ngIf="isSubmitted" class="score-summary-card">
+      <div class="score-circle">
+        <span class="score-value">{{ finalScore }}</span>
+        <span class="score-max">/ 5</span>
+      </div>
+      <div class="score-text">
+        <h2>Section Completed!</h2>
+        <p>You earned <strong>{{ finalScore }}</strong> points out of 5.</p>
+      </div>
+    </div>
+
     <div *ngIf="activeSection">
       <h1>{{ activeSection.type }}</h1>
       <hr>
@@ -48,34 +60,19 @@
             </iframe>
           </div>
         </div>
-
-<!--        Exercise type: True and False-->
         <div *ngIf="ex.type === 'True_False'" class="options-container">
-          <p class="instruction">
-            <em>{{ ex.parsedContent.instruction || 'Decide if the statement is true or false:' }}</em>
-          </p>
-
+          <p class="instruction"><em>Decide if the statement is true or false:</em></p>
           <div class="question-block">
-            <h3 class="question-text">
-              <span class="q-number">{{ ex.orderNum - 1 }}</span> {{ ex.parsedContent.question }}
-            </h3>
-
+            <h3 class="question-text">{{ ex.parsedContent.question }}</h3>
             <div class="options-list">
-              <div *ngFor="let opt of ex.parsedContent.options; let optIdx = index"
+              <div *ngFor="let opt of ['True', 'False']"
                    class="option-card"
                    [class.selected]="ex.userAnswer === opt"
                    [class.correct]="ex.submitted && opt === ex.parsedContent.answer"
                    [class.incorrect]="ex.submitted && ex.userAnswer === opt && ex.userAnswer !== ex.parsedContent.answer"
                    (click)="!ex.submitted && (ex.userAnswer = opt)">
-
-                <div class="option-letter">{{ opt.charAt(0) }}</div>
                 <div class="option-content">{{ opt }}</div>
               </div>
-            </div>
-
-            <div *ngIf="ex.submitted && ex.parsedContent.explanation" class="explanation-box">
-              <hr>
-              <p><strong>Explanation:</strong> {{ ex.parsedContent.explanation }}</p>
             </div>
           </div>
         </div>

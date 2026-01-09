@@ -13,6 +13,10 @@ import { SafePipe } from '../shared/safe.pipe';
   styleUrls: ['./courses-learn-view.css']
 })
 export class LessonViewComponent implements OnInit {
+  finalScore: number = 0;
+  totalInteractives: number = 0;
+  isSubmitted: boolean = false;
+
   levelId: string | null = null;
   courseId: string | null = null;
   sections: any[] = [];
@@ -68,14 +72,13 @@ export class LessonViewComponent implements OnInit {
           this.exercises = data.map(ex => ({
             ...ex,
             parsedContent: typeof ex.content === 'string' ? JSON.parse(ex.content) : ex.content,
-            userAnswers: {} // Inițializăm pentru FillGaps
+            userAnswers: {}
           }));
         },
-        error: (err) => console.error("Eroare la încărcarea exercițiilor:", err)
+        error: (err) => console.error("Error loading exercises:", err)
       });
   }
 
-  // --- Helpers pentru UI ---
 
   getObjectKeys(obj: any): string[] {
     return obj ? Object.keys(obj) : [];
@@ -88,8 +91,6 @@ export class LessonViewComponent implements OnInit {
     });
     return this.sanitizer.bypassSecurityTrustHtml(replaced);
   }
-
-  // --- Logica de Interacțiune ---
 
   selectGapAnswer(ex: any, gapKey: string, option: string) {
     if (!ex.userAnswers) ex.userAnswers = {};
@@ -104,36 +105,43 @@ export class LessonViewComponent implements OnInit {
     ex.submitted = true;
   }
 
-  submitEntireSection() {
-    this.exercises.forEach(ex => {
-      if (ex.type !== 'Text') ex.submitted = true;
-    });
-
-    let score = 0;
-    let totalInteractives = 0;
+submitEntireSection() {
+    let totalCorrect = 0;
+    this.totalInteractives = 0;
 
     this.exercises.forEach(ex => {
+      if (ex.type === 'Text' || ex.type === 'Video') return;
+
+      ex.submitted = true;
+
       if (ex.type === 'Option') {
-        totalInteractives++;
-        if (ex.userAnswer === ex.parsedContent.answer) score++;
+        this.totalInteractives++;
+        if (ex.userAnswer === ex.parsedContent.answer) totalCorrect++;
       }
       else if (ex.type === 'True_False') {
-        ex.parsedContent.questions.forEach((q: any) => {
-          totalInteractives++;
-          if (q.userAnswer === q.answer) score++;
-        });
+        this.totalInteractives++;
+        if (ex.userAnswer === ex.parsedContent.answer) totalCorrect++;
       }
       else if (ex.type === 'FillGaps') {
         const keys = Object.keys(ex.parsedContent.answer_key);
         keys.forEach(key => {
-          totalInteractives++;
+          this.totalInteractives++;
           if (ex.userAnswers && ex.userAnswers[key] === ex.parsedContent.answer_key[key]) {
-            score++;
+            totalCorrect++;
           }
         });
       }
     });
 
-    const percentage = totalInteractives > 0 ? Math.round((score / totalInteractives) * 100) : 0;
-    alert(`Section Complete! Your score: ${score}/${totalInteractives} (${percentage}%)`);
+    if (this.totalInteractives > 0) {
+      this.finalScore = parseFloat(((totalCorrect / this.totalInteractives) * 5).toFixed(2));
+    } else {
+      this.finalScore = 0;
+    }
+
+    this.isSubmitted = true;
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+}
+
