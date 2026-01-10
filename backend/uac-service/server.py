@@ -154,8 +154,9 @@ class AuthService(protos.auth_pb2_grpc.AuthServiceServicer):
                 "alg": ALGORITHM,
                 "typ": "JWT"
                 }
-            exp_time = datetime.datetime.now(datetime.UTC) + datetime.timedelta(hours=1)
+            from datetime import datetime, timedelta, timezone
 
+            exp_time = datetime.now(timezone.utc) + timedelta(hours=1)
             payload = {
                 "iss": SERVICE_URL,             
                 "sub": str(exist.uid),            

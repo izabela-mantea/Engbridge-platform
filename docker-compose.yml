@@ -3,7 +3,9 @@ services:
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: engbridge
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "3306:3306"
     restart: always
@@ -14,7 +16,7 @@ services:
       dockerfile: Dockerfile
     environment:
       MYSQL_HOST: mysql
-      MYSQL_DATABASE: engbridge
+      MYSQL_DATABASE: uac_db
       MYSQL_USER: root
       MYSQL_PASSWORD: root
     ports:
@@ -73,3 +75,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "4200:80"
+
+volumes:
+  mysql_data:
