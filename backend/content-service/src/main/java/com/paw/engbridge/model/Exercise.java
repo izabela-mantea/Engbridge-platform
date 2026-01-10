@@ -17,7 +17,7 @@ public class Exercise {
     private String type;
 
     @Lob
-    @Column()
+    @Column(columnDefinition = "LONGTEXT")
     private String content;
 
     @ManyToOne

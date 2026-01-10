@@ -12,8 +12,8 @@
   <nav class="header-nav">
     <ul>
       <li><a href="/">Home</a></li>
-      <li class="dropdown">
-        <a href="#" class="dropdown-toggle">Courses <span class="arrow-down">▼</span></a>
+      <li class="dropdown" [class.open]="coursesOpen">
+        <a href="javascript:void(0)" (click)="toggleCourses($event)" class="dropdown-toggle">Courses <span class="arrow-down">▼</span></a>
         <div class="dropdown-menu">
           <a href="/course-b1" class="dropdown-item">
             <span class="level">B1 Intermediate</span>
@@ -31,11 +31,29 @@
           </a>
         </div>
       </li>
-      <li class="register-item"><a href="/register"> Register </a></li>
-      <li class="login-item">
-        <a href="/login">
-          <img src="../../assets/login.png" alt="Login Info" class="icon-person" /> Login
+      
+      <ng-container *ngIf="!isLoggedIn">
+        <li class="register-item"><a routerLink="/register"> Register </a></li>
+        <li class="login-item">
+          <a routerLink="/login">
+            <img src="../../assets/login.png" alt="Login Info" class="icon-person" /> Login
+          </a>
+        </li>
+      </ng-container>
+
+      <li class="dropdown" *ngIf="isLoggedIn" [class.open]="profileOpen">
+        <a href="javascript:void(0)" (click)="toggleProfile($event)" class="dropdown-toggle">
+          <img src="../../assets/login.png" alt="User" class="icon-person" /> {{ username }} <span class="arrow-down">▼</span>
         </a>
+        <div class="dropdown-menu" style="min-width: 220px; right: 0; left: auto;">
+          <div style="padding: 15px; border-bottom: 1px solid #eee;">
+            <div style="font-weight: 700; color: #333; font-size: 1.1em;">{{ username }}</div>
+            <div style="font-size: 0.85em; color: #777; margin-top: 4px; word-break: break-all;">{{ email }}</div>
+          </div>
+          <a href="javascript:void(0)" (click)="logout()" class="dropdown-item" style="color: #d9534f; padding: 12px 15px; font-weight: 600;">
+            Logout
+          </a>
+        </div>
       </li>
     </ul>
   </nav>

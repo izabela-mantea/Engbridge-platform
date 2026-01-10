@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../shared/auth.service';
 
 @Component({
   selector: 'app-courses-learn',
@@ -16,7 +17,9 @@ export class CoursesLearnComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private http: HttpClient
+    private http: HttpClient,
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -45,6 +48,12 @@ export class CoursesLearnComponent implements OnInit {
         error: (err) => console.error('Loading error:', err)
       });
   }
+
+  startLesson(courseId: number) {
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate([`/${this.levelId}/${courseId}`]);
+    } else {
+      this.router.navigate(['/login']);
+    }
+  }
 }
-
-
