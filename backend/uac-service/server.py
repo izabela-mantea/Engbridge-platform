@@ -161,7 +161,7 @@ class AuthService(protos.auth_pb2_grpc.AuthServiceServicer):
                 "sub": str(exist.uid),            
                 "exp": int(exp_time.timestamp()),   
                 "jti": str(uuid.uuid4()),       
-                "role": exist.role.value if isinstance(exist.role, UserRole) else exist.role
+                "role": exist.role.value if hasattr(exist.role, 'value') else str(exist.role)
                 }
 
             token = jwt.encode(headers=header, payload=payload, key=SECRET_KEY, algorithm=ALGORITHM)
