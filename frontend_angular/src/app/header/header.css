@@ -191,8 +191,8 @@
   border-radius: 12px;
   z-index: 10;
   display: none;
-  padding: 10px 0; /* Changed padding */
-  margin-top: 0;   /* Removed margin to prevent gap */
+  padding: 10px 0;
+  margin-top: 0;
 }
 
 /* Invisible bridge to keep hover active */
@@ -245,9 +245,9 @@
 }
 
 .dropdown-item .level {
-  font-weight: 700; /* Foarte bold */
-    font-size: 1.05em; /* Mărește puțin */
-    color: #007bff; /* Aplică culoarea de brand pe nivel */
+  font-weight: 700;
+    font-size: 1.05em;
+    color: #007bff;
     line-height: 1.4;
     text-align: left;
 }

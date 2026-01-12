@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, NgZone } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
@@ -26,7 +26,9 @@ export class LessonViewComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private cd: ChangeDetectorRef,
+    private ngZone: NgZone
   ) {}
 
   ngOnInit() {
@@ -50,11 +52,14 @@ export class LessonViewComponent implements OnInit {
   loadSections(currentSectionId: string | null) {
     this.http.get<any[]>(`http://localhost:8081/courses/${this.courseId}/sections`)
       .subscribe(data => {
-        this.sections = data;
-        if (currentSectionId) {
-          this.updateActiveSection(currentSectionId);
-          this.loadExercisesForSection(currentSectionId);
-        }
+        this.ngZone.run(() => {
+            this.sections = data;
+            if (currentSectionId) {
+              this.updateActiveSection(currentSectionId);
+              this.loadExercisesForSection(currentSectionId);
+            }
+            this.cd.detectChanges();
+        });
       });
   }
 
@@ -69,11 +74,14 @@ export class LessonViewComponent implements OnInit {
     this.http.get<any[]>(`http://localhost:8081/exercises/section/${id}`)
       .subscribe({
         next: (data) => {
-          this.exercises = data.map(ex => ({
-            ...ex,
-            parsedContent: typeof ex.content === 'string' ? JSON.parse(ex.content) : ex.content,
-            userAnswers: {}
-          }));
+          this.ngZone.run(() => {
+              this.exercises = data.map(ex => ({
+                ...ex,
+                parsedContent: typeof ex.content === 'string' ? JSON.parse(ex.content) : ex.content,
+                userAnswers: {}
+              }));
+              this.cd.detectChanges();
+          });
         },
         error: (err) => console.error("Error loading exercises:", err)
       });

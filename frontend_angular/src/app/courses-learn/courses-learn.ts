@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, NgZone } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
@@ -19,7 +19,9 @@ export class CoursesLearnComponent implements OnInit {
     private route: ActivatedRoute,
     private http: HttpClient,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private cd: ChangeDetectorRef,
+    private ngZone: NgZone
   ) {}
 
   ngOnInit() {
@@ -42,8 +44,11 @@ export class CoursesLearnComponent implements OnInit {
       .subscribe({
         next: (data) =>
         {
-          console.log('data fetched from server:', data);
-          this.courses = data;
+          this.ngZone.run(() => {
+             console.log('data fetched from server:', data);
+             this.courses = data;
+             this.cd.detectChanges(); // Extra safety
+          });
         },
         error: (err) => console.error('Loading error:', err)
       });
