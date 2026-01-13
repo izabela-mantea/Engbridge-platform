@@ -151,4 +151,8 @@ export class AuthService {
   isLoggedIn(): boolean {
     return this.loggedIn.value;
   }
+
+  getCurrentLevel(): number {
+    return this.currentLevel.value;
+  }
 }

@@ -9,17 +9,51 @@ import { RegisterComponent } from './register/register';
 import { LoginComponent } from './login/login';
 import { CourseRedirectComponent } from './course-redirect/course-redirect';
 import { PlacementTestComponent } from './placement-test/placement-test.component';
+import { authGuard } from './shared/auth.guard';
+import { levelGuard } from './shared/level.guard';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'placement-test', component: PlacementTestComponent },
-  { path: 'course-b1', component: B1Component },
-  { path: 'course-b2', component: B2Component },
-  { path: 'course-c1', component: C1Component },
-  { path: 'courses-learn/:levelId', component: CoursesLearnComponent },
-  { path: ':levelId/:courseId', component: CourseRedirectComponent },
-  { path: ':levelId/:courseId/:sectionId', component: LessonViewComponent },
-  //   { path: 'courses-learn-view/:levelId/:courseId/:sectionId', component: LessonViewComponent }
+  { path: 'placement-test', component: PlacementTestComponent, canActivate: [authGuard] },
+  
+  // B1 Routes (Level 1 - Open to all logged-in users)
+  { path: 'course-b1', component: B1Component, canActivate: [authGuard] },
+  
+  // B2 Routes (Level 2)
+  { 
+    path: 'course-b2', 
+    component: B2Component, 
+    canActivate: [authGuard, levelGuard], 
+    data: { requiredLevel: 2 } 
+  },
+  
+  // C1 Routes (Level 3)
+  { 
+    path: 'course-c1', 
+    component: C1Component, 
+    canActivate: [authGuard, levelGuard], 
+    data: { requiredLevel: 3 } 
+  },
+  
+  // Dynamic Courses Routes
+  { 
+    path: 'courses-learn/:levelId', 
+    component: CoursesLearnComponent, 
+    canActivate: [authGuard, levelGuard] 
+  },
+  
+  // Redirect and Lesson Views
+  { 
+    path: ':levelId/:courseId', 
+    component: CourseRedirectComponent, 
+    canActivate: [authGuard, levelGuard] 
+  },
+  
+  { 
+    path: ':levelId/:courseId/:sectionId', 
+    component: LessonViewComponent, 
+    canActivate: [authGuard, levelGuard] 
+  }
 ];
