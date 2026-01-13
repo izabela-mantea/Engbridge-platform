@@ -270,3 +270,40 @@
   font-size: 0.7em;
   margin-left: 5px;
 }
+.btn-placement {
+  background-color: #27ae60;
+  color: white !important;
+  padding: 8px 16px !important;
+  border-radius: 20px;
+  border: none;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.btn-placement:hover {
+  background-color: #2ecc71;
+  border-bottom: none !important;
+}
+
+.score-display {
+  color: #2c3e50;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.dropdown-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f9f9f9;
+}
+
+.dropdown-item.disabled:hover {
+  border-left: none;
+  background-color: #f9f9f9;
+}
+
+.lock-icon {
+  margin-left: auto;
+  font-size: 1.2em;
+}
+

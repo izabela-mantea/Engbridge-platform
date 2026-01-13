@@ -19,4 +19,7 @@ public class User {
 
     private String role;
 
+    @Column(name = "placement_test_score")
+    private Integer placementTestScore;
+
 }

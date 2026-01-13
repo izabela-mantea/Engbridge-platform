@@ -14,6 +14,8 @@ export class HeaderComponent implements OnInit {
   isLoggedIn = false;
   username = '';
   email = '';
+  placementScore: number | null = null;
+  currentLevel: number = 1;
 
   coursesOpen = false;
   profileOpen = false;
@@ -32,20 +34,28 @@ export class HeaderComponent implements OnInit {
     this.authService.email$.subscribe(mail => {
       this.email = mail;
     });
+
+    this.authService.placementScore$.subscribe(score => {
+      this.placementScore = score;
+    });
+
+    this.authService.currentLevel$.subscribe(level => {
+      this.currentLevel = level;
+    });
   }
 
   toggleCourses(event: Event) {
     event.preventDefault();
     event.stopPropagation();
     this.coursesOpen = !this.coursesOpen;
-    this.profileOpen = false; // Close profile if courses opens
+    this.profileOpen = false;
   }
 
   toggleProfile(event: Event) {
     event.preventDefault();
     event.stopPropagation();
     this.profileOpen = !this.profileOpen;
-    this.coursesOpen = false; // Close courses if profile opens
+    this.coursesOpen = false;
   }
 
   logout() {

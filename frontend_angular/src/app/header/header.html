@@ -12,6 +12,13 @@
   <nav class="header-nav">
     <ul>
       <li><a href="/">Home</a></li>
+      
+      <!-- Placement Test Button -->
+       <li *ngIf="isLoggedIn" style="border-left: 1px solid #eee; padding-left: 30px;">
+         <a *ngIf="placementScore === null" routerLink="/placement-test" class="btn-placement">Placement Test</a>
+         <span *ngIf="placementScore !== null" class="score-display">Score: {{ placementScore }}/30</span>
+       </li>
+
       <li class="dropdown" [class.open]="coursesOpen">
         <a href="javascript:void(0)" (click)="toggleCourses($event)" class="dropdown-toggle">Courses <span class="arrow-down">▼</span></a>
         <div class="dropdown-menu">
@@ -20,14 +27,16 @@
             <span class="description">Cambridge B1 Preliminary</span>
           </a>
 
-          <a href="/course-b2" class="dropdown-item">
+          <a href="/course-b2" class="dropdown-item" [class.disabled]="currentLevel < 2" (click)="currentLevel < 2 ? $event.preventDefault() : null">
             <span class="level">B2 Upper-Intermediate</span>
             <span class="description">Cambridge B2 First</span>
+            <span *ngIf="currentLevel < 2" class="lock-icon">🔒</span>
           </a>
 
-          <a href="/course-c1" class="dropdown-item border-top">
+          <a href="/course-c1" class="dropdown-item border-top" [class.disabled]="currentLevel < 3" (click)="currentLevel < 3 ? $event.preventDefault() : null">
             <span class="level">C1 Advanced</span>
             <span class="description">Cambridge C1 Advanced</span>
+            <span *ngIf="currentLevel < 3" class="lock-icon">🔒</span>
           </a>
         </div>
       </li>

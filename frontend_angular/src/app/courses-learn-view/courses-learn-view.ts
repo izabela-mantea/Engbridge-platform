@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { SafePipe } from '../shared/safe.pipe';
+import { AuthService } from '../shared/auth.service';
 
 @Component({
   selector: 'app-courses-learn-view',
@@ -28,7 +29,8 @@ export class LessonViewComponent implements OnInit {
     private http: HttpClient,
     private sanitizer: DomSanitizer,
     private cd: ChangeDetectorRef,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -148,8 +150,33 @@ submitEntireSection() {
     }
 
     this.isSubmitted = true;
+    this.submitProgress();
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  submitProgress() {
+    const userId = localStorage.getItem('userId');
+    if (!userId) return;
+
+    const progressData = {
+      userId: parseInt(userId, 10),
+      courseId: parseInt(this.courseId!, 10),
+      levelId: parseInt(this.levelId!, 10),
+      score: this.finalScore,
+      status: this.finalScore >= 3 ? 'COMPLETED' : 'IN_PROGRESS'
+    };
+
+    this.http.post('http://localhost:8081/progress', progressData).subscribe({
+      next: (res) => {
+        console.log("Progress saved:", res);
+        const username = localStorage.getItem('username');
+        if (username) {
+          this.authService.fetchUserInfo(username);
+        }
+      },
+      error: (err) => console.error("Failed to save progress:", err)
+    });
   }
 }
 

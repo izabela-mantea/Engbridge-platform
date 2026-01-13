@@ -89,25 +89,29 @@
         </div>
       </div>
 
-      <div class="course-card-long b2-border">
+      <div class="course-card-long b2-border" [class.locked]="isLoggedIn && currentLevel < 2">
         <div class="card-content">
           <div class="badge b2-badge">Level: B2 First</div>
-          <h3>B2 First (FCE)</h3>
+          <h3>B2 First (FCE) <span *ngIf="isLoggedIn && currentLevel < 2">🔒</span></h3>
           <p>Our most popular choice. Prove you have the language skills to live and work independently in an English-speaking country.</p>
         </div>
         <div class="card-action">
-          <button [routerLink]="['/course-b2']" class="btn-primary">View Details</button>
+          <button [routerLink]="['/course-b2']" [disabled]="isLoggedIn && currentLevel < 2" class="btn-primary">
+            {{ isLoggedIn && currentLevel < 2 ? 'Locked' : 'View Details' }}
+          </button>
         </div>
       </div>
 
-      <div class="course-card-long c1-border">
+      <div class="course-card-long c1-border" [class.locked]="isLoggedIn && currentLevel < 3">
         <div class="card-content">
           <div class="badge c1-badge">Level: C1 Advanced</div>
-          <h3>C1 Advanced (CAE)</h3>
+          <h3>C1 Advanced (CAE) <span *ngIf="isLoggedIn && currentLevel < 3">🔒</span></h3>
           <p>Master the language at an academic level. This qualification is recognized by thousands of universities and employers worldwide.</p>
         </div>
         <div class="card-action">
-          <button [routerLink]="['/course-c1']" class="btn-primary">View Details</button>
+          <button [routerLink]="['/course-c1']" [disabled]="isLoggedIn && currentLevel < 3" class="btn-primary">
+            {{ isLoggedIn && currentLevel < 3 ? 'Locked' : 'View Details' }}
+          </button>
         </div>
       </div>
 

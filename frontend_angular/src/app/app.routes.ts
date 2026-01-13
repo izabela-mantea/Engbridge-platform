@@ -8,11 +8,13 @@ import { LessonViewComponent } from './courses-learn-view/courses-learn-view';
 import { RegisterComponent } from './register/register';
 import { LoginComponent } from './login/login';
 import { CourseRedirectComponent } from './course-redirect/course-redirect';
+import { PlacementTestComponent } from './placement-test/placement-test.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'placement-test', component: PlacementTestComponent },
   { path: 'course-b1', component: B1Component },
   { path: 'course-b2', component: B2Component },
   { path: 'course-c1', component: C1Component },

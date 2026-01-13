@@ -9,27 +9,70 @@ import { isPlatformBrowser } from '@angular/common';
 })
 export class AuthService {
   private loggedIn = new BehaviorSubject<boolean>(false);
-  private username = new BehaviorSubject<string>('');
-  private email = new BehaviorSubject<string>('');
-
-  isLoggedIn$ = this.loggedIn.asObservable();
-  username$ = this.username.asObservable();
-  email$ = this.email.asObservable();
-
-  constructor(
-    private router: Router,
-    private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {
-    if (this.isBrowser()) {
-      const hasToken = this.hasToken();
-      this.loggedIn.next(hasToken);
-      this.username.next(this.getStoredUsername());
-      this.email.next(localStorage.getItem('email') || '');
+    private username = new BehaviorSubject<string>('');
+    private email = new BehaviorSubject<string>('');
+    private userId = new BehaviorSubject<number | null>(null);
+    private currentLevel = new BehaviorSubject<number>(1);
+    private placementScore = new BehaviorSubject<number | null>(null);
+  
+    isLoggedIn$ = this.loggedIn.asObservable();
+    username$ = this.username.asObservable();
+    email$ = this.email.asObservable();
+    userId$ = this.userId.asObservable();
+    currentLevel$ = this.currentLevel.asObservable();
+    placementScore$ = this.placementScore.asObservable();
+  
+    constructor(
+      private router: Router,
+      private http: HttpClient,
+      @Inject(PLATFORM_ID) private platformId: Object
+    ) {
+      if (this.isBrowser()) {
+        const hasToken = this.hasToken();
+        this.loggedIn.next(hasToken);
+        this.username.next(this.getStoredUsername());
+        this.email.next(localStorage.getItem('email') || '');
+        
+        const storedId = localStorage.getItem('userId');
+        if (storedId) this.userId.next(parseInt(storedId, 10));
+  
+        const storedLevel = localStorage.getItem('currentLevel');
+  
+      if (storedLevel) this.currentLevel.next(parseInt(storedLevel, 10));
+      
+      const storedScore = localStorage.getItem('placementScore');
+      if (storedScore) this.placementScore.next(parseInt(storedScore, 10));
 
       if (hasToken) {
         this.fetchProfile();
+        this.fetchUserInfo(this.getStoredUsername());
       }
+    }
+  }
+
+  fetchUserInfo(username: string) {
+    if (!username || username === 'User') return;
+    this.http.get<any>(`http://localhost:8081/users/info?username=${username}`).subscribe({
+      next: (data) => {
+        this.currentLevel.next(data.levelId);
+        this.placementScore.next(data.placementTestScore);
+        if (this.isBrowser()) {
+          localStorage.setItem('currentLevel', data.levelId.toString());
+          if (data.placementTestScore !== null) {
+            localStorage.setItem('placementScore', data.placementTestScore.toString());
+          }
+        }
+      },
+      error: (err) => console.error("Failed to fetch user info", err)
+    });
+  }
+
+  updateUserInfo(levelId: number, score: number) {
+    this.currentLevel.next(levelId);
+    this.placementScore.next(score);
+    if (this.isBrowser()) {
+      localStorage.setItem('currentLevel', levelId.toString());
+      localStorage.setItem('placementScore', score.toString());
     }
   }
 
@@ -55,6 +98,7 @@ export class AuthService {
     this.loggedIn.next(true);
     this.username.next(username);
     this.fetchProfile();
+    this.fetchUserInfo(username);
   }
 
   fetchProfile() {
@@ -66,6 +110,11 @@ export class AuthService {
     this.http.get<any>('http://localhost:8086/api/users/me', { headers }).subscribe({
       next: (data) => {
         if (this.isBrowser()) {
+          if (data.uid || data.id_user) {
+            const id = data.uid || data.id_user;
+            localStorage.setItem('userId', id.toString());
+            this.userId.next(id);
+          }
           if (data.email) {
             localStorage.setItem('email', data.email);
             this.email.next(data.email);
@@ -73,6 +122,7 @@ export class AuthService {
           if (data.username) {
               localStorage.setItem('username', data.username);
               this.username.next(data.username);
+              this.fetchUserInfo(data.username);
           }
         }
       },
@@ -85,10 +135,16 @@ export class AuthService {
       localStorage.removeItem('token');
       localStorage.removeItem('username');
       localStorage.removeItem('email');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('currentLevel');
+      localStorage.removeItem('placementScore');
     }
     this.loggedIn.next(false);
     this.username.next('');
     this.email.next('');
+    this.userId.next(null);
+    this.currentLevel.next(1);
+    this.placementScore.next(null);
     this.router.navigate(['/']);
   }
 
