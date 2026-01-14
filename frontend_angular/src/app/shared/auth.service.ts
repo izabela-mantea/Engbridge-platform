@@ -14,14 +14,14 @@ export class AuthService {
     private userId = new BehaviorSubject<number | null>(null);
     private currentLevel = new BehaviorSubject<number>(1);
     private placementScore = new BehaviorSubject<number | null>(null);
-  
+
     isLoggedIn$ = this.loggedIn.asObservable();
     username$ = this.username.asObservable();
     email$ = this.email.asObservable();
     userId$ = this.userId.asObservable();
     currentLevel$ = this.currentLevel.asObservable();
     placementScore$ = this.placementScore.asObservable();
-  
+
     constructor(
       private router: Router,
       private http: HttpClient,
@@ -32,14 +32,14 @@ export class AuthService {
         this.loggedIn.next(hasToken);
         this.username.next(this.getStoredUsername());
         this.email.next(localStorage.getItem('email') || '');
-        
+
         const storedId = localStorage.getItem('userId');
         if (storedId) this.userId.next(parseInt(storedId, 10));
-  
+
         const storedLevel = localStorage.getItem('currentLevel');
-  
+
       if (storedLevel) this.currentLevel.next(parseInt(storedLevel, 10));
-      
+
       const storedScore = localStorage.getItem('placementScore');
       if (storedScore) this.placementScore.next(parseInt(storedScore, 10));
 
@@ -126,8 +126,14 @@ export class AuthService {
           }
         }
       },
-      error: (err) => console.error("Failed to fetch profile", err)
+   error: (err) => {
+          console.error("Failed to fetch profile", err);
+          if (err.status === 401) {
+            this.logout();
+          }
+        }
     });
+
   }
 
   logout() {

@@ -83,6 +83,7 @@ export class LessonViewComponent implements OnInit {
                 userAnswers: {}
               }));
               this.cd.detectChanges();
+              this.loadSectionProgress(id); // <--- Apel nou pentru Redis
           });
         },
         error: (err) => console.error("Error loading exercises:", err)
@@ -115,7 +116,7 @@ export class LessonViewComponent implements OnInit {
     ex.submitted = true;
   }
 
-submitEntireSection() {
+  submitEntireSection() {
     let totalCorrect = 0;
     this.totalInteractives = 0;
 
@@ -150,6 +151,7 @@ submitEntireSection() {
     }
 
     this.isSubmitted = true;
+    console.log("Scor trimis:", this.finalScore)
     this.submitProgress();
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -167,9 +169,11 @@ submitEntireSection() {
       status: this.finalScore >= 3 ? 'COMPLETED' : 'IN_PROGRESS'
     };
 
+    // Salvare in MySQL
     this.http.post('http://localhost:8081/progress', progressData).subscribe({
       next: (res) => {
         console.log("Progress saved:", res);
+        this.saveToRedis(progressData.status); // <--- Salvare în Redis sincronizată
         const username = localStorage.getItem('username');
         if (username) {
           this.authService.fetchUserInfo(username);
@@ -178,5 +182,62 @@ submitEntireSection() {
       error: (err) => console.error("Failed to save progress:", err)
     });
   }
-}
 
+  // --- METODE ADAUGATE PENTRU REDIS ---
+
+  loadSectionProgress(sectionId: string) {
+    const userId = localStorage.getItem('userId');
+    if (!userId) return;
+
+    this.http.get<any>(`http://localhost:8081/redis-progress/section`, {
+      params: {
+        userId: userId,
+        courseId: this.courseId!,
+        sectionId: sectionId
+      }
+    }).subscribe(progress => {
+      if (progress && progress.userId) {
+        this.applyProgress(progress);
+      }
+    });
+  }
+
+  applyProgress(progress: any) {
+    this.finalScore = progress.finalScore ?? 0;
+    this.isSubmitted = progress.status === 'COMPLETED';
+
+    if (progress.exercises && Array.isArray(progress.exercises)) {
+      this.exercises.forEach(ex => {
+        const saved = progress.exercises.find((s: any) => s.exerciseId === ex.id);
+        if (saved) {
+          ex.userAnswer = saved.userAnswer;
+          ex.userAnswers = saved.userAnswers;
+          ex.submitted = saved.submitted;
+        }
+      });
+    }
+    this.cd.detectChanges();
+  }
+
+  saveToRedis(status: string) {
+    const userId = localStorage.getItem('userId');
+    if (!userId || !this.activeSection) return;
+
+    const redisData = {
+      userId: parseInt(userId, 10),
+      courseId: parseInt(this.courseId!, 10),
+      sectionId: parseInt(this.activeSection.id, 10),
+      levelId: parseInt(this.levelId!, 10),
+      finalScore: this.finalScore,
+      status: status,
+      exercises: this.exercises.map(ex => ({
+        exerciseId: ex.id,
+        userAnswer: ex.userAnswer,
+        userAnswers: ex.userAnswers,
+        submitted: ex.submitted
+      }))
+    };
+
+    this.http.post('http://localhost:8081/redis-progress/section', redisData).subscribe();
+  }
+}
