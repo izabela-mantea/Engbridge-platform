@@ -12,9 +12,12 @@ import java.util.Optional;
 @Repository
 public interface SectionRepository extends JpaRepository<Section, Integer> {
 
+    @Query("SELECT COUNT(s) FROM Section s WHERE s.course.level.id = :levelId")
+    long countByLevelId(@Param("levelId") Integer levelId);
+
     @Query("SELECT c FROM Section c WHERE c.course.id = :courseId AND c.orderNum = :orderNum")
     Optional<Section> findByCourseIdAndOrderNum(
-            @Param("levelId") Integer courseId,
+            @Param("courseId") Integer courseId,
             @Param("orderNum") Integer orderNum
     );
 }

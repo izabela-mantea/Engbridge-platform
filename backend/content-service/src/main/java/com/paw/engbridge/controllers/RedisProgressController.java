@@ -54,6 +54,7 @@ public class RedisProgressController {
                     progress.getUserId(),
                     progress.getCourseId(),
                     progress.getLevelId(),
+                    progress.getSectionId(),
                     scoreToSave,
                     "COMPLETED"
             );

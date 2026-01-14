@@ -27,6 +27,7 @@ public class ProgressController {
                 progressData.getUserId(),
                 progressData.getCourseId(),
                 progressData.getLevelId(),
+                progressData.getSectionId(),
                 progressData.getScore(),
                 progressData.getStatus()
         );

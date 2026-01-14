@@ -29,4 +29,7 @@ public class UserProgress {
 
     @Column(name = "courses_levels_id_lvl", nullable = false)
     private Integer levelId;
+
+    @Column(name = "sections_id_sec")
+    private Integer sectionId;
 }

@@ -10,6 +10,8 @@ import java.util.Optional;
 @Repository
 public interface UserProgressRepository extends JpaRepository<UserProgress, Integer> {
 
+    Optional<UserProgress> findByUserIdAndCourseIdAndSectionId(Integer userId, Integer courseId, Integer sectionId);
+
     Optional<UserProgress> findByUserIdAndCourseId(Integer userId, Integer courseId);
 
     List<UserProgress> findByUserId(Integer userId);

@@ -148,6 +148,7 @@ CREATE TABLE `userprogress` (
   `id_usrprg` int NOT NULL AUTO_INCREMENT,
   `courses_id_cs` int NOT NULL,
   `courses_levels_id_lvl` int NOT NULL,
+  `sections_id_sec` int DEFAULT NULL,
   `score` decimal(5,2) DEFAULT NULL,
   `status` varchar(15) DEFAULT NULL,
   `users_id_user` int NOT NULL,

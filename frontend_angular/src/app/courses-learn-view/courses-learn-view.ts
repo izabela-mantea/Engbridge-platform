@@ -165,6 +165,7 @@ export class LessonViewComponent implements OnInit {
       userId: parseInt(userId, 10),
       courseId: parseInt(this.courseId!, 10),
       levelId: parseInt(this.levelId!, 10),
+      sectionId: parseInt(this.activeSection.id, 10),
       score: this.finalScore,
       status: this.finalScore >= 3 ? 'COMPLETED' : 'IN_PROGRESS'
     };

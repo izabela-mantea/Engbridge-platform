@@ -18,15 +18,17 @@ public class ProgressService {
     private final UserProgressRepository progressRepository;
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
+    private final SectionRepository sectionRepository;
 
     @Autowired
-    public ProgressService(UserProgressRepository progressRepository, CourseRepository courseRepository, UserRepository userRepository) {
+    public ProgressService(UserProgressRepository progressRepository, CourseRepository courseRepository, UserRepository userRepository, SectionRepository sectionRepository) {
         this.progressRepository = progressRepository;
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
+        this.sectionRepository = sectionRepository;
     }
-    public UserProgress updateProgress(Integer userId, Integer courseId, Integer levelId, BigDecimal score, String status) {
-        Optional<UserProgress> existingProgress = progressRepository.findByUserIdAndCourseId(userId, courseId);
+    public UserProgress updateProgress(Integer userId, Integer courseId, Integer levelId, Integer sectionId, BigDecimal score, String status) {
+        Optional<UserProgress> existingProgress = progressRepository.findByUserIdAndCourseIdAndSectionId(userId, courseId, sectionId);
 
         UserProgress progress;
         if (existingProgress.isPresent()) {
@@ -40,6 +42,7 @@ public class ProgressService {
             progress.setUserId(userId);
             progress.setCourseId(courseId);
             progress.setLevelId(levelId);
+            progress.setSectionId(sectionId);
             progress.setScore(score != null ? score : BigDecimal.ZERO);
             progress.setStatus(status != null ? status : "IN_PROGRESS");
         }
@@ -54,13 +57,19 @@ public class ProgressService {
     }
 
     private void checkAndUpgradeLevel(Integer userId, Integer levelId) {
-        List<Course> allCoursesInLevel = courseRepository.findByLevelId(levelId);
+        long totalSectionsInLevel = sectionRepository.countByLevelId(levelId);
         List<UserProgress> userProgressInLevel = progressRepository.findByUserId(userId)
                 .stream()
                 .filter(p -> p.getLevelId().equals(levelId) && "COMPLETED".equalsIgnoreCase(p.getStatus()))
                 .toList();
 
-        if (!allCoursesInLevel.isEmpty() && userProgressInLevel.size() >= allCoursesInLevel.size()) {
+        // Count unique sections completed (to be safe, though updateProgress should handle it)
+        long completedSectionsCount = userProgressInLevel.stream()
+                .map(UserProgress::getSectionId)
+                .distinct()
+                .count();
+
+        if (totalSectionsInLevel > 0 && completedSectionsCount >= totalSectionsInLevel) {
             userRepository.findById(userId).ifPresent(user -> {
                 int currentMaxLevel = user.getLevels_id_lvl() != null ? user.getLevels_id_lvl() : 1;
                 if (currentMaxLevel <= levelId && currentMaxLevel < 3) {
