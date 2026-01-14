@@ -83,6 +83,10 @@ services:
     container_name: engbridge-redis
     ports:
       - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
     restart: always
 volumes:
   mysql_data:
+  redis_data:
