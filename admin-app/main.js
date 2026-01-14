@@ -10,11 +10,11 @@ function createWindow() {
       contextIsolation: false
     }
   });
-
+win.setMenu(null);
   const indexPath = path.join(__dirname, 'dist/admin-app/browser/index.html');
   win.loadURL(`file://${indexPath.replace(/\\/g, '/')}`);
 
-  win.webContents.openDevTools();
+  //win.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {

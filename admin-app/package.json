@@ -1,14 +1,13 @@
 {
   "name": "admin-app",
   "version": "0.0.0",
+  "main": "main.js",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "serve:ssr:admin-app": "node dist/admin-app/server/server.mjs",
-    "electron": "npm run build && electron main.js"
+    "electron": "ng build && electron main.js",
+    "dist": "ng build --configuration production && electron-builder"
   },
   "prettier": {
     "printWidth": 100,
@@ -51,5 +50,22 @@
     "jsdom": "^27.1.0",
     "typescript": "~5.9.2",
     "vitest": "^4.0.8"
+  },
+  "build": {
+    "appId": "com.engbridge.admin",
+    "productName": "EngBridge Admin",
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "icon": "src/app/assets/icons/icon.ico",
+      "target": "portable"
+    },
+    "files": [
+      "dist/**/*",
+      "main.js",
+      "package.json",
+      "src/app/assets/icons/logo.ico"
+    ]
   }
 }
