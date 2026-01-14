@@ -36,6 +36,10 @@
         Start Lesson
       </a>
 
+      <button (click)="resetProgress(course.id)" class="btn-reset">
+        Reset
+      </button>
+
     </div> <div *ngIf="courses.length === 0" class="details-card" style="grid-column: 1 / -1; text-align: center;">
     <p>Loading your study plan...</p>
   </div>

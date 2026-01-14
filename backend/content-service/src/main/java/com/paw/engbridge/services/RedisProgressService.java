@@ -37,4 +37,12 @@ public class RedisProgressService {
     public void deleteUserSectionProgress(Integer userId, Integer courseId, Integer sectionId) {
         redisTemplate.delete(buildKey(userId, courseId, sectionId));
     }
+
+    public void deleteCourseProgress(Integer userId, Integer courseId) {
+        String pattern = "user:" + userId + ":course:" + courseId + ":section:*";
+        java.util.Set<String> keys = redisTemplate.keys(pattern);
+        if (keys != null && !keys.isEmpty()) {
+            redisTemplate.delete(keys);
+        }
+    }
 }

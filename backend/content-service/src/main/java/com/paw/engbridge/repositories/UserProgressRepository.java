@@ -15,4 +15,6 @@ public interface UserProgressRepository extends JpaRepository<UserProgress, Inte
     Optional<UserProgress> findByUserIdAndCourseId(Integer userId, Integer courseId);
 
     List<UserProgress> findByUserId(Integer userId);
+
+    void deleteByUserIdAndCourseId(Integer userId, Integer courseId);
 }

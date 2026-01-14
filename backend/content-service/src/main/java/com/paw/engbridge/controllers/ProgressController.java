@@ -2,6 +2,7 @@ package com.paw.engbridge.controllers;
 
 import com.paw.engbridge.model.UserProgress;
 import com.paw.engbridge.services.ProgressService;
+import com.paw.engbridge.services.RedisProgressService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,9 +13,11 @@ import java.util.List;
 public class ProgressController {
 
     private final ProgressService progressService;
+    private final RedisProgressService redisProgressService;
 
-    public ProgressController(ProgressService progressService) {
+    public ProgressController(ProgressService progressService, RedisProgressService redisProgressService) {
         this.progressService = progressService;
+        this.redisProgressService = redisProgressService;
     }
 
     @PostMapping
@@ -47,5 +50,12 @@ public class ProgressController {
         return progressService.getSpecificProgress(userId, courseId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/reset")
+    public ResponseEntity<?> resetProgress(@RequestParam Integer userId, @RequestParam Integer courseId) {
+        progressService.resetProgress(userId, courseId);
+        redisProgressService.deleteCourseProgress(userId, courseId);
+        return ResponseEntity.ok("Progress reset successfully");
     }
 }

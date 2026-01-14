@@ -13,6 +13,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
 public class ProgressService {
 
@@ -112,5 +114,10 @@ public class ProgressService {
         }
 
         return java.util.Map.of("completed", completedCourses, "total", totalCourses);
+    }
+
+    @Transactional
+    public void resetProgress(Integer userId, Integer courseId) {
+        progressRepository.deleteByUserIdAndCourseId(userId, courseId);
     }
 }

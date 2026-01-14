@@ -61,4 +61,29 @@ export class CoursesLearnComponent implements OnInit {
       this.router.navigate(['/login']);
     }
   }
+
+  resetProgress(courseId: number) {
+    if (!confirm('Are you sure you want to reset your progress for this course? This action cannot be undone.')) {
+      return;
+    }
+
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      alert('You must be logged in to reset progress.');
+      return;
+    }
+
+    this.http.delete(`http://localhost:8081/progress/reset?userId=${userId}&courseId=${courseId}`, { responseType: 'text' })
+      .subscribe({
+        next: (res) => {
+          this.ngZone.run(() => {
+            alert('Progress reset successfully!');
+          });
+        },
+        error: (err) => {
+          console.error('Reset error:', err);
+          alert('Failed to reset progress.');
+        }
+      });
+  }
 }
