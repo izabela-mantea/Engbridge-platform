@@ -31,21 +31,21 @@ export class UserFormComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes['user'] || changes['isVisible']) {
       this.isEditMode = !!this.user;
-      
+
       if (this.isEditMode && this.user) {
         this.userForm.patchValue({
           username: this.user.username,
           email: this.user.email,
-          password: '', 
+          password: '',
           role: this.user.role
         });
-        
+
         this.userForm.get('username')?.clearValidators();
         this.userForm.get('email')?.clearValidators();
         this.userForm.get('password')?.clearValidators();
-        
+
         this.userForm.get('email')?.setValidators([Validators.email]);
-        
+
         this.userForm.get('username')?.updateValueAndValidity();
         this.userForm.get('email')?.updateValueAndValidity();
         this.userForm.get('password')?.updateValueAndValidity();
@@ -56,11 +56,11 @@ export class UserFormComponent implements OnChanges {
           password: '',
           role: 'STUDENT'
         });
-        
+
         this.userForm.get('username')?.setValidators([Validators.required]);
         this.userForm.get('email')?.setValidators([Validators.required, Validators.email]);
         this.userForm.get('password')?.setValidators([Validators.required]);
-        
+
         this.userForm.get('username')?.updateValueAndValidity();
         this.userForm.get('email')?.updateValueAndValidity();
         this.userForm.get('password')?.updateValueAndValidity();
@@ -77,23 +77,23 @@ export class UserFormComponent implements OnChanges {
     if (this.userForm.valid || this.isEditMode) {
       const formValue = this.userForm.value;
       const userData: any = {};
-      
+
       if (formValue.username && formValue.username.trim()) {
         userData.username = formValue.username;
       }
-      
+
       if (formValue.email && formValue.email.trim()) {
         userData.email = formValue.email;
       }
-      
+
       if (formValue.password && formValue.password.trim()) {
         userData.password = formValue.password;
       }
-      
+
       if (formValue.role) {
         userData.role = formValue.role;
       }
-      
+
       this.onSave.emit(userData);
       this.userForm.reset();
     }

@@ -32,47 +32,38 @@ export class AuthService {
       .pipe(
         tap(response => {
           if (response.error) {
-            throw new Error(response.error);
+            throw { status: 401, message: response.error };
+          }
+
+          const decoded = jwtDecode<JWTPayload>(response.token);
+
+          if (decoded.role !== 'ADMIN') {
+            throw { status: 403, message: 'Access denied. Only administrators can use this application.' };
           }
 
           if (isPlatformBrowser(this.platformId)) {
-            try {
-              const decoded = jwtDecode<JWTPayload>(response.token);
-
-              if (decoded.role !== 'ADMIN') {
-                throw new Error('Access denied. Only administrators can use this application.');
-              }
-
-              localStorage.setItem('jwtToken', response.token);
-              localStorage.setItem('currentUser', JSON.stringify({
-                uid: decoded.sub,
-                role: decoded.role
-              }));
-            } catch (error) {
-              localStorage.removeItem('jwtToken');
-              localStorage.removeItem('currentUser');
-              throw error;
-            }
+            localStorage.setItem('jwtToken', response.token);
+            localStorage.setItem('currentUser', JSON.stringify({
+              uid: decoded.sub,
+              role: decoded.role
+            }));
           }
         }),
-        catchError((error: HttpErrorResponse) => {
-          let errorMessage = 'Login failed. Please check your credentials.';
+        catchError((error: any) => {
+          let errorMessage = 'Login failed.';
 
-          if (error.status === 401) {
+          if (error.status === 403) {
+            errorMessage = error.message;
+          } else if (error.status === 401 || error.error?.status === 401) {
             errorMessage = 'Invalid username or password.';
-          } else if (error.status === 500) {
-            errorMessage = 'Server error. Please try again later.';
           } else if (error.status === 0) {
-            errorMessage = 'Cannot connect to server. Please check your connection.';
-          } else if (error.error?.message) {
-            errorMessage = error.error.message;
+            errorMessage = 'Cannot connect to server.';
           }
 
           return throwError(() => new Error(errorMessage));
         })
       );
   }
-
   logout(): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('jwtToken');

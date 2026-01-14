@@ -8,12 +8,12 @@
     <form [formGroup]="userForm" (ngSubmit)="saveUser()">
       <div class="form-group">
         <label for="username">Username *</label>
-        <input 
-            type="text" 
-            id="username" 
-            formControlName="username"
-            [placeholder]="isEditMode ? 'Leave blank to keep current' : 'Enter username'"
-            />
+        <input
+          type="text"
+          id="username"
+          formControlName="username"
+          [placeholder]="isEditMode ? 'Leave blank to keep current' : 'Enter username'"
+        />
 
 
         <div class="error" *ngIf="userForm.get('username')?.invalid && userForm.get('username')?.touched">
@@ -22,24 +22,21 @@
       </div>
 
       <div class="form-group">
-        <label for="email">Email *</label>
-       
-        <input 
-        type="email" 
-        id="email" 
-        formControlName="email"
-        [placeholder]="isEditMode ? 'Leave blank to keep current' : 'Enter email'"
-        />
-        <div class="error" *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched">
-          Valid email is required
-        </div>
+        <label>Email</label>
+        <input
+          type="email"
+          formControlName="email"
+          class="form-control"
+          [readonly]="isEditMode"
+          [class.disabled-look]="isEditMode">
+        <small *ngIf="isEditMode" class="info-text">Email cannot be changed.</small>
       </div>
 
       <div class="form-group">
         <label for="password">Password {{ isEditMode ? '(leave blank to keep current)' : '*' }}</label>
-        <input 
-          type="password" 
-          id="password" 
+        <input
+          type="password"
+          id="password"
           formControlName="password"
           placeholder="Enter password"
         />
