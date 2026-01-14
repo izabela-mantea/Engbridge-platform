@@ -10,10 +10,9 @@ import { UserFormComponent } from '../user-form/user-form.component';
   standalone: true,
   imports: [CommonModule, UserFormComponent],
   templateUrl: './admin-dashboard.component.html',
-  styleUrls: ['./admin-dashboard.component.css']
+  styleUrls: ['./admin-dashboard.component.css'],
 })
 export class AdminDashboardComponent implements OnInit {
-
   users: User[] = [];
   currentUser: any = null;
   errorMessage = '';
@@ -24,7 +23,7 @@ export class AdminDashboardComponent implements OnInit {
 
   showUserForm = false;
   selectedUser: User | null = null;
-  activeTab: 'users' | 'courses' = 'users'; 
+  activeTab: 'users' | 'courses' = 'users';
 
   constructor(
     private adminService: AdminService,
@@ -32,7 +31,7 @@ export class AdminDashboardComponent implements OnInit {
     private router: Router,
     private cdr: ChangeDetectorRef,
     private ngZone: NgZone
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
@@ -54,7 +53,7 @@ export class AdminDashboardComponent implements OnInit {
           console.log('Is array?', Array.isArray(data));
 
           // Filter out current user - don't show them in the list
-          this.users = data.filter(user => String(user.uid) !== String(this.currentUser?.uid));
+          this.users = data.filter((user) => String(user.uid) !== String(this.currentUser?.uid));
           this.loading = false;
 
           console.log('this.users after assignment:', this.users);
@@ -70,16 +69,16 @@ export class AdminDashboardComponent implements OnInit {
           this.loading = false;
           this.cdr.detectChanges();
         });
-      }
+      },
     });
   }
 
   getAdminCount(): number {
-    return this.users.filter(u => u.role === 'ADMIN').length;
+    return this.users.filter((u) => u.role === 'ADMIN').length;
   }
 
   getStudentCount(): number {
-    return this.users.filter(u => u.role === 'STUDENT').length;
+    return this.users.filter((u) => u.role === 'STUDENT').length;
   }
 
   getRoleClass(role: string): string {
@@ -87,26 +86,23 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   openCreateUser() {
-  this.selectedUser = null;  // null = CREATE mode
-  this.showUserForm = true;
-  this.errorMessage = '';
-}
+    this.selectedUser = null; // null = CREATE mode
+    this.showUserForm = true;
+    this.errorMessage = '';
+  }
 
-editUser(user: User) {
-  this.selectedUser = { ...user };  // clone = EDIT mode
-  this.showUserForm = true;
-  this.errorMessage = '';
-}
-
+  editUser(user: User) {
+    this.selectedUser = { ...user }; // clone = EDIT mode
+    this.showUserForm = true;
+    this.errorMessage = '';
+  }
 
   viewUser(user: User) {
     // TODO: Implement view user details
     console.log('View user:', user);
     this.successMessage = `Viewing user: ${user.username}`;
-    setTimeout(() => this.successMessage = '', 3000);
+    setTimeout(() => (this.successMessage = ''), 3000);
   }
-
-
 
   confirmDelete(user: User) {
     this.userToDelete = user;
@@ -127,14 +123,14 @@ editUser(user: User) {
         this.showDeleteConfirm = false;
         this.userToDelete = null;
         this.loadUsers();
-        setTimeout(() => this.successMessage = '', 3000);
+        setTimeout(() => (this.successMessage = ''), 3000);
       },
       error: (err) => {
         console.error('Error deleting user:', err);
         this.errorMessage = 'Failed to delete user: ' + (err.message || 'Unknown error');
         this.showDeleteConfirm = false;
         this.userToDelete = null;
-      }
+      },
     });
   }
 
@@ -143,54 +139,57 @@ editUser(user: User) {
     this.router.navigate(['/login']);
   }
   switchTab(tab: 'users' | 'courses') {
-  this.activeTab = tab;
-  this.errorMessage = '';
-  this.successMessage = '';
-}
- handleSaveUser(userData: User) {
-  if (this.selectedUser?.uid) {
-    this.adminService.updateUser(this.selectedUser.uid, userData).subscribe({
-      next: () => {
-        this.successMessage = 'User updated successfully!';
-        this.showUserForm = false;
-        this.loadUsers();
-        setTimeout(() => this.successMessage = '', 3000);
-      },
-      error: (err) => {
-        console.error('Update error:', err);
-        if (err.status === 400) {
-          this.errorMessage = 'Invalid data: ' + (err.error?.message || 'Please check your input');
-        } else if (err.status === 409) {
-          this.errorMessage = 'User with this username or email already exists';
-        } else if (err.status === 404) {
-          this.errorMessage = 'User not found';
-        } else {
-          this.errorMessage = 'Failed to update user: ' + (err.error?.message || err.message || 'Unknown error');
-        }
-        setTimeout(() => this.errorMessage = '', 5000);
-      }
-    });
-  } else {
-    this.adminService.createUser(userData).subscribe({
-      next: () => {
-        this.successMessage = 'User created successfully!';
-        this.showUserForm = false;
-        this.loadUsers();
-        setTimeout(() => this.successMessage = '', 3000);
-      },
-      error: (err) => {
-        console.error('Create error:', err);
-        if (err.status === 400) {
-          this.errorMessage = 'Invalid data: ' + (err.error?.message || 'Please check your input');
-        } else if (err.status === 409) {
-          this.errorMessage = 'User with this username or email already exists';
-        } else {
-          this.errorMessage = 'Failed to create user: ' + (err.error?.message || err.message || 'Unknown error');
-        }
-        setTimeout(() => this.errorMessage = '', 5000);
-      }
-    });
+    this.activeTab = tab;
+    this.errorMessage = '';
+    this.successMessage = '';
   }
-}
-
+  handleSaveUser(userData: User) {
+    if (this.selectedUser?.uid) {
+      this.adminService.updateUser(this.selectedUser.uid, userData).subscribe({
+        next: () => {
+          this.successMessage = 'User updated successfully!';
+          this.showUserForm = false;
+          this.loadUsers();
+          setTimeout(() => (this.successMessage = ''), 3000);
+        },
+        error: (err) => {
+          console.error('Update error:', err);
+          if (err.status === 400) {
+            this.errorMessage =
+              'Invalid data: ' + (err.error?.message || 'Please check your input');
+          } else if (err.status === 409) {
+            this.errorMessage = 'User with this username or email already exists';
+          } else if (err.status === 404) {
+            this.errorMessage = 'User not found';
+          } else {
+            this.errorMessage =
+              'Failed to update user: ' + (err.error?.message || err.message || 'Unknown error');
+          }
+          setTimeout(() => (this.errorMessage = ''), 5000);
+        },
+      });
+    } else {
+      this.adminService.createUser(userData).subscribe({
+        next: () => {
+          this.successMessage = 'User created successfully!';
+          this.showUserForm = false;
+          this.loadUsers();
+          setTimeout(() => (this.successMessage = ''), 3000);
+        },
+        error: (err) => {
+          console.error('Create error:', err);
+          if (err.status === 400) {
+            this.errorMessage =
+              'Invalid data: ' + (err.error?.message || 'Please check your input');
+          } else if (err.status === 409) {
+            this.errorMessage = 'User with this username or email already exists';
+          } else {
+            this.errorMessage =
+              'Failed to create user: ' + (err.error?.message || err.message || 'Unknown error');
+          }
+          setTimeout(() => (this.errorMessage = ''), 5000);
+        },
+      });
+    }
+  }
 }
