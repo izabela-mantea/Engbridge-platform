@@ -3,6 +3,7 @@ package com.paw.engbridge.services;
 import com.paw.engbridge.model.Course;
 import com.paw.engbridge.model.UserProgress;
 import com.paw.engbridge.repositories.CourseRepository;
+import com.paw.engbridge.repositories.SectionRepository;
 import com.paw.engbridge.repositories.UserProgressRepository;
 import com.paw.engbridge.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,5 +87,30 @@ public class ProgressService {
 
     public Optional<UserProgress> getSpecificProgress(Integer userId, Integer courseId) {
         return progressRepository.findByUserIdAndCourseId(userId, courseId);
+    }
+
+    public java.util.Map<String, Long> getCourseProgressStats(Integer userId) {
+        List<Course> allCourses = courseRepository.findAll();
+        long totalCourses = allCourses.size();
+        long completedCourses = 0;
+
+        List<UserProgress> userProgress = progressRepository.findByUserId(userId);
+
+        for (Course course : allCourses) {
+            long totalSections = sectionRepository.countByCourseId(course.getId());
+            if (totalSections == 0) continue;
+
+            long completedSections = userProgress.stream()
+                    .filter(p -> p.getCourseId().equals(course.getId()) && "COMPLETED".equalsIgnoreCase(p.getStatus()))
+                    .map(UserProgress::getSectionId)
+                    .distinct()
+                    .count();
+
+            if (completedSections >= totalSections) {
+                completedCourses++;
+            }
+        }
+
+        return java.util.Map.of("completed", completedCourses, "total", totalCourses);
     }
 }

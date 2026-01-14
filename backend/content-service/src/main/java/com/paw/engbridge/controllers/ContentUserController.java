@@ -17,6 +17,9 @@ public class ContentUserController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private com.paw.engbridge.services.ProgressService progressService;
+
     @GetMapping("/info")
     public ResponseEntity<?> getUserInfo(@RequestParam String username) {
         Optional<User> userOpt = userRepository.findByUsername(username);
@@ -24,11 +27,18 @@ public class ContentUserController {
         if (userOpt.isEmpty()) {
             response.put("levelId", 1);
             response.put("placementTestScore", null);
+            response.put("completedLessons", 0);
+            response.put("totalLessons", 0);
             return ResponseEntity.ok(response);
         }
         User user = userOpt.get();
         response.put("levelId", user.getLevels_id_lvl() != null ? user.getLevels_id_lvl() : 1);
         response.put("placementTestScore", user.getPlacementTestScore());
+        
+        java.util.Map<String, Long> stats = progressService.getCourseProgressStats(user.getId_user());
+        response.put("completedLessons", stats.get("completed"));
+        response.put("totalLessons", stats.get("total"));
+
         return ResponseEntity.ok(response);
     }
 

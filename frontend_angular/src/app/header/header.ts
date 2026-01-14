@@ -16,6 +16,8 @@ export class HeaderComponent implements OnInit {
   email = '';
   placementScore: number | null = null;
   currentLevel: number = 1;
+  completedLessons: number = 0;
+  totalLessons: number = 0;
 
   coursesOpen = false;
   profileOpen = false;
@@ -58,6 +60,20 @@ export class HeaderComponent implements OnInit {
     this.authService.currentLevel$.subscribe(level => {
       this.ngZone.run(() => {
         this.currentLevel = level;
+        this.cd.detectChanges();
+      });
+    });
+
+    this.authService.completedLessons$.subscribe(count => {
+      this.ngZone.run(() => {
+        this.completedLessons = count;
+        this.cd.detectChanges();
+      });
+    });
+
+    this.authService.totalLessons$.subscribe(count => {
+      this.ngZone.run(() => {
+        this.totalLessons = count;
         this.cd.detectChanges();
       });
     });

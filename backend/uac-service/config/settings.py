@@ -9,7 +9,7 @@ print("Looking for .env at:", os.path.join(os.path.dirname(__file__), ".env"))
 class Settings(BaseSettings):
     mysql_host: str = "localhost"
     mysql_port: int = 3306
-    mysql_database: str = "uac_dbv"
+    mysql_database: str = "uac_db"
     mysql_user: str = "root"
     mysql_password: str = "root"
 

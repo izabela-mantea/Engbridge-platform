@@ -14,6 +14,8 @@ export class AuthService {
     private userId = new BehaviorSubject<number | null>(null);
     private currentLevel = new BehaviorSubject<number>(1);
     private placementScore = new BehaviorSubject<number | null>(null);
+    private completedLessons = new BehaviorSubject<number>(0);
+    private totalLessons = new BehaviorSubject<number>(0);
 
     isLoggedIn$ = this.loggedIn.asObservable();
     username$ = this.username.asObservable();
@@ -21,6 +23,8 @@ export class AuthService {
     userId$ = this.userId.asObservable();
     currentLevel$ = this.currentLevel.asObservable();
     placementScore$ = this.placementScore.asObservable();
+    completedLessons$ = this.completedLessons.asObservable();
+    totalLessons$ = this.totalLessons.asObservable();
 
     constructor(
       private router: Router,
@@ -43,6 +47,12 @@ export class AuthService {
       const storedScore = localStorage.getItem('placementScore');
       if (storedScore) this.placementScore.next(parseInt(storedScore, 10));
 
+      const storedCompleted = localStorage.getItem('completedLessons');
+      if (storedCompleted) this.completedLessons.next(parseInt(storedCompleted, 10));
+
+      const storedTotal = localStorage.getItem('totalLessons');
+      if (storedTotal) this.totalLessons.next(parseInt(storedTotal, 10));
+
       if (hasToken) {
         this.fetchProfile();
         this.fetchUserInfo(this.getStoredUsername());
@@ -56,11 +66,16 @@ export class AuthService {
       next: (data) => {
         this.currentLevel.next(data.levelId);
         this.placementScore.next(data.placementTestScore);
+        if (data.completedLessons !== undefined) this.completedLessons.next(data.completedLessons);
+        if (data.totalLessons !== undefined) this.totalLessons.next(data.totalLessons);
+
         if (this.isBrowser()) {
           localStorage.setItem('currentLevel', data.levelId.toString());
           if (data.placementTestScore !== null) {
             localStorage.setItem('placementScore', data.placementTestScore.toString());
           }
+          localStorage.setItem('completedLessons', (data.completedLessons || 0).toString());
+          localStorage.setItem('totalLessons', (data.totalLessons || 0).toString());
         }
       },
       error: (err) => console.error("Failed to fetch user info", err)
@@ -144,6 +159,8 @@ export class AuthService {
       localStorage.removeItem('userId');
       localStorage.removeItem('currentLevel');
       localStorage.removeItem('placementScore');
+      localStorage.removeItem('completedLessons');
+      localStorage.removeItem('totalLessons');
     }
     this.loggedIn.next(false);
     this.username.next('');
@@ -151,6 +168,8 @@ export class AuthService {
     this.userId.next(null);
     this.currentLevel.next(1);
     this.placementScore.next(null);
+    this.completedLessons.next(0);
+    this.totalLessons.next(0);
     this.router.navigate(['/']);
   }
 

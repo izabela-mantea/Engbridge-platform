@@ -13,10 +13,13 @@
     <ul>
       <li><a href="/">Home</a></li>
       
-      <!-- Placement Test Button -->
+      <!-- Placement Test Button & Lessons Score -->
        <li *ngIf="isLoggedIn" style="border-left: 1px solid #eee; padding-left: 30px;">
-         <a *ngIf="placementScore === null" routerLink="/placement-test" class="btn-placement">Placement Test</a>
-         <span *ngIf="placementScore !== null" class="score-display">Score: {{ placementScore }}/30</span>
+         <div style="display: flex; gap: 15px; align-items: center;">
+            <a *ngIf="placementScore === null" routerLink="/placement-test" class="btn-placement">Placement Test</a>
+            <span *ngIf="placementScore !== null" class="score-display">Score: {{ placementScore }}/30</span>
+            <span class="score-display" title="Completed Courses">Lessons: {{ completedLessons }}/{{ totalLessons }}</span>
+         </div>
        </li>
 
       <li class="dropdown" [class.open]="coursesOpen">
