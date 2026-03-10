@@ -64,3 +64,9 @@ src/environments/environment*.ts
 *~
 tmp/
 temp/
+
+target/
+*.jar
+node_modules/
+dist/
+build/
